@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Fingers10.EnterpriseArchitecture.API</name>
+    </assembly>
+    <members>
+        <member name="P:Fingers10.EnterpriseArchitecture.API.Startup.Configuration">
+            <summary>
+            Appsettings Configuration
+            </summary>
+        </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container. For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Mvc.ApiExplorer.IApiVersionDescriptionProvider)">
+            <summary>
+            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app"></param>
+            <param name="apiVersionDescriptionProvider"></param>
+        </member>
+        <member name="T:Fingers10.EnterpriseArchitecture.API.Utils.HandlerRegistration">
+            <summary>
+            Handler Registration Utility
+            </summary>
+        </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Utils.HandlerRegistration.AddHandlers(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Handler to register command handlers
+            </summary>
+            <param name="services"></param>
+        </member>
+    </members>
+</doc>
