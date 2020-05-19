@@ -4,6 +4,17 @@
         <name>Fingers10.EnterpriseArchitecture.API</name>
     </assembly>
     <members>
+        <member name="T:Fingers10.EnterpriseArchitecture.API.Startup">
+            <summary>
+            Startup that gets called on application start to setup services and request middlewares
+            </summary>
+        </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Constructor for Startup
+            </summary>
+            <param name="configuration"></param>
+        </member>
         <member name="P:Fingers10.EnterpriseArchitecture.API.Startup.Configuration">
             <summary>
             Appsettings Configuration

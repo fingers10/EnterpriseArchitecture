@@ -200,7 +200,7 @@ namespace Fingers10.EnterpriseArchitecture.API
             services.AddSingleton(consoleLogging);
 
             var commandsConnectionString = new CommandsConnectionString(Configuration["ConnectionString"]);
-            var queriesConnectionString = new QueriesConnectionString(Configuration["QueriesConnectionString"]);
+            var queriesConnectionString = new QueriesConnectionString(Configuration["ConnectionString"]);
             services.AddSingleton(commandsConnectionString);
             services.AddSingleton(queriesConnectionString);
 
@@ -210,6 +210,7 @@ namespace Fingers10.EnterpriseArchitecture.API
             services.AddTransient<Messages>();
             services.AddTransient<Fingers10Context>();
             services.AddTransient<IAsyncRepository<Student>, StudentRepository>();
+            services.AddTransient<IStudentReadonlyRepository, StudentReadonlyRepository>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddHandlers();
         }

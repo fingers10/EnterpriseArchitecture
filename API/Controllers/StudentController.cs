@@ -21,9 +21,9 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetList(string enrolled, int? number)
+        public async Task<IActionResult> GetList()
         {
-            var list = _messages.Dispatch(new GetListQuery(enrolled, number));
+            var list = await _messages.Dispatch(new GetStudentsListQuery());
             return Ok(list);
         }
 
