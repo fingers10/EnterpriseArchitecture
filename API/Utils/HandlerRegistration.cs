@@ -19,7 +19,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Utils
         /// <param name="services"></param>
         public static void AddHandlers(this IServiceCollection services)
         {
-            List<Type> handlerTypes = typeof(ICommand).Assembly.GetTypes()
+            List<Type> handlerTypes = typeof(ICommand<>).Assembly.GetTypes()
                 .Where(x => x.GetInterfaces().Any(IsHandlerInterface) && x.Name.EndsWith("Handler", StringComparison.InvariantCulture))
                 .ToList();
 
@@ -105,10 +105,10 @@ namespace Fingers10.EnterpriseArchitecture.API.Utils
             Type type = attribute.GetType();
 
             if (type == typeof(DatabaseRetryAttribute))
-                return typeof(DatabaseRetryDecorator<>);
+                return typeof(DatabaseRetryDecorator<,>);
 
             if (type == typeof(AuditLogAttribute))
-                return typeof(AuditLoggingDecorator<>);
+                return typeof(AuditLoggingDecorator<,>);
 
             // other attributes go here
 
@@ -122,7 +122,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Utils
 
             Type typeDefinition = type.GetGenericTypeDefinition();
 
-            return typeDefinition == typeof(ICommandHandler<>) || typeDefinition == typeof(IQueryHandler<,>);
+            return typeDefinition == typeof(ICommandHandler<,>) || typeDefinition == typeof(IQueryHandler<,>);
         }
     }
 }

@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Decorators
 {
-    public sealed class AuditLoggingDecorator<TCommand> : ICommandHandler<TCommand>
-        where TCommand : ICommand
+    public sealed class AuditLoggingDecorator<TCommand, T> : ICommandHandler<TCommand, T>
+        where TCommand : ICommand<T>
     {
-        private readonly ICommandHandler<TCommand> _handler;
+        private readonly ICommandHandler<TCommand, T> _handler;
 
-        public AuditLoggingDecorator(ICommandHandler<TCommand> handler)
+        public AuditLoggingDecorator(ICommandHandler<TCommand, T> handler)
         {
             _handler = handler;
         }
 
-        public async Task<Result> Handle(TCommand command)
+        public async Task<Result<T>> Handle(TCommand command)
         {
             string commandJson = JsonSerializer.Serialize(command);
 

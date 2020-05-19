@@ -6,25 +6,25 @@ using System.Threading.Tasks;
 
 namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Decorators
 {
-    public sealed class DatabaseRetryDecorator<TCommand> : ICommandHandler<TCommand>
-        where TCommand : ICommand
+    public sealed class DatabaseRetryDecorator<TCommand,T> : ICommandHandler<TCommand,T>
+        where TCommand : ICommand<T>
     {
-        private readonly ICommandHandler<TCommand> _handler;
+        private readonly ICommandHandler<TCommand,T> _handler;
         private readonly Config _config;
 
-        public DatabaseRetryDecorator(ICommandHandler<TCommand> handler, Config config)
+        public DatabaseRetryDecorator(ICommandHandler<TCommand,T> handler, Config config)
         {
             _config = config;
             _handler = handler;
         }
 
-        public async Task<Result> Handle(TCommand command)
+        public async Task<Result<T>> Handle(TCommand command)
         {
             for (int i = 0; ; i++)
             {
                 try
                 {
-                    Result result = await _handler.Handle(command);
+                    Result<T> result = await _handler.Handle(command);
                     return result;
                 }
                 catch (Exception ex)

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
 {
-    public sealed class RegisterStudentCommand : ICommand
+    public sealed class RegisterStudentCommand : ICommand<Student>
     {
         public RegisterStudentCommand(string firstName, string lastName, long nameSuffixId, string email,
             long favoriteCourseId, Grade favoriteCourseGrade)
@@ -28,7 +28,7 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
 
         [AuditLog]
         [DatabaseRetry]
-        internal sealed class RegisterCommandHandler : ICommandHandler<RegisterStudentCommand>
+        internal sealed class RegisterCommandHandler : ICommandHandler<RegisterStudentCommand, Student>
         {
             private readonly IAsyncRepository<Student> _studentRepository;
 
@@ -37,23 +37,23 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
                 _studentRepository = studentRepository;
             }
 
-            public async Task<Result> Handle(RegisterStudentCommand command)
+            public async Task<Result<Student>> Handle(RegisterStudentCommand command)
             {
                 Course favoriteCourse = Course.FromId(command.FavoriteCourseId);
                 if (favoriteCourse == null)
-                    return Result.Failure<string>("Course not found");
+                    return Result.Failure<Student>("Course not found");
 
                 Suffix suffix = Suffix.FromId(command.NameSuffixId);
                 if (suffix == null)
-                    return Result.Failure<string>("Suffix not found");
+                    return Result.Failure<Student>("Suffix not found");
 
                 Result<Email> emailResult = Entities.Email.Create(command.Email);
                 if (emailResult.IsFailure)
-                    return Result.Failure<string>(emailResult.Error);
+                    return Result.Failure<Student>(emailResult.Error);
 
                 Result<Name> nameResult = Name.Create(command.FirstName, command.LastName, suffix);
                 if (nameResult.IsFailure)
-                    return Result.Failure<string>(nameResult.Error);
+                    return Result.Failure<Student>(nameResult.Error);
 
                 var student = new Student(
                     nameResult.Value,

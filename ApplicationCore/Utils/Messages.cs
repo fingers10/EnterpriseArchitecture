@@ -14,14 +14,14 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Utils
             _provider = provider;
         }
 
-        public async Task<Result> Dispatch(ICommand command)
+        public async Task<Result<T>> Dispatch<T>(ICommand<T> command)
         {
-            Type type = typeof(ICommandHandler<>);
-            Type[] typeArgs = { command.GetType() };
+            Type type = typeof(ICommandHandler<,>);
+            Type[] typeArgs = { command.GetType(), typeof(T) };
             Type handlerType = type.MakeGenericType(typeArgs);
 
             dynamic handler = _provider.GetService(handlerType);
-            Result result = await handler.Handle((dynamic)command);
+            Result<T> result = await handler.Handle((dynamic)command);
 
             return result;
         }
