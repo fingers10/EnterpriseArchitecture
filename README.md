@@ -23,3 +23,13 @@ Principles
 3. KISS
 4. YAGNI
 5. DRY
+
+Code Analysis
+=====================
+1. Microsoft.CodeAnalysis.FxCopAnalyzers
+2. Roslynator.Analyzers
+
+Code Security
+=====================
+1. SecurityCodeScan
+2. NuGetDefense
