@@ -1,4 +1,5 @@
 ﻿using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities;
+using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Author;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Interfaces;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Utils;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +26,8 @@ namespace Fingers10.EnterpriseArchitecture.Infrastructure.Data
 
         public DbSet<Student> Students { get; set; }
         public DbSet<Course> Courses { get; set; }
+        public DbSet<Author> Authors { get; set; }
+        public DbSet<Book> Books { get; set; }
 
         public Fingers10Context(CommandsConnectionString connectionString, ConsoleLogging consoleLogging, EventDispatcher eventDispatcher, IHttpContextAccessor httpContextAccessor)
         {

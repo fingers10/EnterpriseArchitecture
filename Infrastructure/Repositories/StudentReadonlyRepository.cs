@@ -17,7 +17,7 @@ namespace Fingers10.EnterpriseArchitecture.Infrastructure.Repositories
 
         public StudentReadonlyRepository(QueriesConnectionString connectionString)
         {
-            _db = new SqlConnection(connectionString?.Value ?? throw new ArgumentNullException((nameof(connectionString))));
+            _db = new SqlConnection(connectionString?.Value ?? throw new ArgumentNullException(nameof(connectionString)));
         }
 
         public async Task<List<StudentDto>> GetAllAsync()

@@ -4,6 +4,52 @@
         <name>Fingers10.EnterpriseArchitecture.API</name>
     </assembly>
     <members>
+        <member name="T:Fingers10.EnterpriseArchitecture.API.Controllers.AuthorController">
+            <summary>
+            Controller to work on Author
+            </summary>
+        </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.AuthorController.#ctor(Fingers10.EnterpriseArchitecture.ApplicationCore.Utils.Messages)">
+            <summary>
+            Constructor for Author Controller
+            </summary>
+            <param name="messages">Message to Dispatch Command</param>
+        </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.AuthorController.GetAuthors(Fingers10.EnterpriseArchitecture.API.ResourceParameters.AuthorsResourceParameters)">
+            <summary>
+            Get the list of authors
+            </summary>
+            <param name="authorsResourceParameters">author resource parameters</param>
+            <returns>An ActionResult of type IEnumerable of AuthorDto</returns>
+        </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.AuthorController.GetAuthor(System.Int32)">
+            <summary>
+            Get the author by id
+            </summary>
+            <param name="authorId">Id of the author that you want</param>
+            <returns>An ActionResult of type AuthorDto</returns>
+        </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.AuthorController.CreateAuthor(Fingers10.EnterpriseArchitecture.API.Dtos.CreateAuthorDto,AutoMapper.IMapper)">
+            <summary>
+            Create a author
+            </summary>
+            <param name="author">The author to create</param>
+            <param name="mapper">Mapper to map objects</param>
+            <returns>An ActionResult of type AuthorDto</returns>
+        </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.AuthorController.GetAuthorsOptions">
+            <summary>
+            HTTP Options available on author
+            </summary>
+            <returns>returns HTTP Options available for author</returns>
+        </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.AuthorController.DeleteAuthor(System.Int32)">
+            <summary>
+            Delete a author
+            </summary>
+            <param name="authorId">The id of the blog to be deleted</param>
+            <returns>Nothing</returns>
+        </member>
         <member name="T:Fingers10.EnterpriseArchitecture.API.Startup">
             <summary>
             Startup that gets called on application start to setup services and request middlewares

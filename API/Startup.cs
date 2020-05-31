@@ -1,3 +1,4 @@
+using AutoMapper;
 using Fingers10.EnterpriseArchitecture.API.Utils;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Interfaces;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -69,18 +71,50 @@ namespace Fingers10.EnterpriseArchitecture.API
                 {
                     options.InvalidModelStateResponseFactory = context =>
                     {
-                        var problemDetails = new ValidationProblemDetails(context.ModelState)
+                        // create a problem details object
+                        var problemDetailsFactory = context.HttpContext.RequestServices
+                            .GetRequiredService<ProblemDetailsFactory>();
+                        var problemDetails = problemDetailsFactory.CreateValidationProblemDetails(
+                                context.HttpContext,
+                                context.ModelState);
+
+                        // add additional info not added by default
+                        problemDetails.Detail = "See the errors field for details.";
+                        problemDetails.Instance = context.HttpContext.Request.Path;
+
+                        // find out which status code to use
+                        var actionExecutingContext =
+                              context as Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext;
+
+                        // if there are modelstate errors & all keys were correctly
+                        // found/parsed we're dealing with validation errors
+                        //
+                        // if the context couldn't be cast to an ActionExecutingContext
+                        // because it's a ControllerContext, we're dealing with an issue 
+                        // that happened after the initial input was correctly parsed.  
+                        // This happens, for example, when manually validating an object inside
+                        // of a controller action.  That means that by then all keys
+                        // WERE correctly found and parsed.  In that case, we're
+                        // thus also dealing with a validation error.
+                        if (context.ModelState.ErrorCount > 0 &&
+                            (context is ControllerContext ||
+                             actionExecutingContext?.ActionArguments.Count == context.ActionDescriptor.Parameters.Count))
                         {
-                            Type = "https://enterprisearchitecture.com/modelvalidationproblem",
-                            Title = "One or more model validation errors occurred.",
-                            Status = StatusCodes.Status422UnprocessableEntity,
-                            Detail = "See the errors property for details.",
-                            Instance = context.HttpContext.Request.Path
-                        };
+                            problemDetails.Type = "https://enterprisearchitecture.com/modelvalidationproblem";
+                            problemDetails.Status = StatusCodes.Status422UnprocessableEntity;
+                            problemDetails.Title = "One or more validation errors occurred.";
 
-                        problemDetails.Extensions.Add("traceId", context.HttpContext.TraceIdentifier);
+                            return new UnprocessableEntityObjectResult(problemDetails)
+                            {
+                                ContentTypes = { "application/problem+json" }
+                            };
+                        }
 
-                        return new UnprocessableEntityObjectResult(problemDetails)
+                        // if one of the keys wasn't correctly found / couldn't be parsed
+                        // we're dealing with null/unparsable input
+                        problemDetails.Status = StatusCodes.Status400BadRequest;
+                        problemDetails.Title = "One or more errors on input occurred.";
+                        return new BadRequestObjectResult(problemDetails)
                         {
                             ContentTypes = { "application/problem+json" }
                         };
@@ -193,6 +227,8 @@ namespace Fingers10.EnterpriseArchitecture.API
                 options.IncludeXmlComments(xmlCommentsFullPath);
             });
 
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             services.AddHttpContextAccessor();
             var config = new Config(Configuration.GetValue<int>("DatabaseConnectRetryAttempts"));
             services.AddSingleton(config);
@@ -211,6 +247,7 @@ namespace Fingers10.EnterpriseArchitecture.API
             services.AddTransient<Fingers10Context>();
             services.AddTransient<IAsyncRepository<Student>, StudentRepository>();
             services.AddTransient<IStudentReadonlyRepository, StudentReadonlyRepository>();
+            services.AddTransient<IAuthorReadonlyRepository, AuthorReadonlyRepository>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddHandlers();
         }

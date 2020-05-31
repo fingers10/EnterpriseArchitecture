@@ -1,4 +1,5 @@
 ﻿using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities;
+using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Author;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Interfaces;
 using Fingers10.EnterpriseArchitecture.Infrastructure.Repositories;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ namespace Fingers10.EnterpriseArchitecture.Infrastructure.Data
     {
         private readonly Fingers10Context _context;
         private IAsyncRepository<Student> _studentRepository;
+        private IAsyncRepository<Author> _authorRepository;
 
         public UnitOfWork(Fingers10Context context)
         {
@@ -19,7 +21,15 @@ namespace Fingers10.EnterpriseArchitecture.Infrastructure.Data
         {
             get
             {
-                return _studentRepository ?? (_studentRepository = new StudentRepository(_context));
+                return _studentRepository ??= new StudentRepository(_context);
+            }
+        }
+
+        public IAsyncRepository<Author> AuthorRepository
+        {
+            get
+            {
+                return _authorRepository ??= new AuthorRepository(_context);
             }
         }
 
