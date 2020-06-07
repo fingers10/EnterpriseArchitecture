@@ -9,10 +9,6 @@ on:
 jobs:
   build:
     
-    defaults:
-      run:
-        working-directory: ./EnterpriseArchitecture
-
     runs-on: ubuntu-latest
 
     steps:
@@ -24,6 +20,6 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --configuration Release
+      run: dotnet build ./EnterpriseArchitecture.sln --configuration Release
     - name: Test
-      run: dotnet test --configuration Release --verbosity normal
+      run: dotnet test ./EnterpriseArchitecture.sln --configuration Release --verbosity normal
