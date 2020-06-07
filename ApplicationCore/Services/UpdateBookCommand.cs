@@ -43,7 +43,7 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
                 if (titleResult.IsFailure)
                     return Result.Failure<Book>(titleResult.Error);
 
-                Result<Description> descriptionResult = Entities.Books.Description.Create(command.Description);
+                Result<Description> descriptionResult = RequiredDescription.Create(command.Description);
                 if (descriptionResult.IsFailure)
                     return Result.Failure<Book>(descriptionResult.Error);
 
