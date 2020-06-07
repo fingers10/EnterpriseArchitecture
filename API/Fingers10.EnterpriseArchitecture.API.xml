@@ -47,7 +47,7 @@
             <summary>
             Delete a author
             </summary>
-            <param name="authorId">The id of the blog to be deleted</param>
+            <param name="authorId">The id of the author to be deleted</param>
             <returns>Nothing</returns>
         </member>
         <member name="T:Fingers10.EnterpriseArchitecture.API.Controllers.BookController">
@@ -82,8 +82,46 @@
             Create a book for author
             </summary>
             <param name="authorId">The author id to whom book needs to be created</param>
-            <param name="book">Book Dto</param>
+            <param name="book">Create Book Dto</param>
             <returns>An ActionResult of type BookDto</returns>
+        </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.UpdateBookForAuthor(System.Int64,System.Int64,Fingers10.EnterpriseArchitecture.API.Dtos.BookForUpdateDto)">
+            <summary>
+            Update a book for author
+            </summary>
+            <param name="authorId">The author id to whom book needs to be updated</param>
+            <param name="bookId">The id of the book to be updated</param>
+            <param name="book">Book For Update Dto</param>
+            <returns>An ActionResult of type BookDto or Nothing</returns>
+        </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.PartiallyUpdateBookForAuthor(System.Int64,System.Int64,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument{Fingers10.EnterpriseArchitecture.API.Dtos.BookForUpdateDto})">
+             <summary>
+             Update a book for author
+             </summary>
+             <param name="authorId">The author id to whom book needs to be updated</param>
+             <param name="bookId">The id of the book to be updated</param>
+             <param name="patchDocument">Book Patch Document</param>
+            
+             <remarks>Sample request (this request updates the book's **title**)  
+             
+             PATCH /authors/authorId/books/bookId
+             [ 
+                 {
+                     "op": "replace", 
+                     "path": "/title", 
+                     "value": "new title" 
+                 } 
+             ] 
+             </remarks>
+             <returns>An ActionResult of type BookDto or Nothing</returns>
+        </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.DeleteBookForAuthor(System.Int64,System.Int64)">
+            <summary>
+            Delete a book
+            </summary>
+            <param name="authorId">The author id of the book to be deleted</param>
+            <param name="bookId">The id of the book to be deleted</param>
+            <returns>Nothing</returns>
         </member>
         <member name="T:Fingers10.EnterpriseArchitecture.API.Startup">
             <summary>

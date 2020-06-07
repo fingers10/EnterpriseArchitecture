@@ -1,15 +1,15 @@
 ﻿using CSharpFunctionalExtensions;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Decorators;
-using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors;
+using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Books;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Interfaces;
 using System;
 using System.Threading.Tasks;
 
 namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
 {
-    public sealed class DeleteAuthorCommand : ICommand<Author>
+    public sealed class DeleteBookCommand : ICommand<Book>
     {
-        public DeleteAuthorCommand(long id)
+        public DeleteBookCommand(long id)
         {
             Id = id;
         }
@@ -18,7 +18,7 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
 
         [AuditLog]
         [DatabaseRetry]
-        internal sealed class RemoveCommandHandler : ICommandHandler<DeleteAuthorCommand, Author>
+        internal sealed class RemoveCommandHandler : ICommandHandler<DeleteBookCommand, Book>
         {
             private readonly IUnitOfWork _unitOfWork;
 
@@ -27,18 +27,18 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
                 _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             }
 
-            public async Task<Result<Author>> Handle(DeleteAuthorCommand command)
+            public async Task<Result<Book>> Handle(DeleteBookCommand command)
             {
-                var author = await _unitOfWork.AuthorRepository.FindAsync(command.Id);
+                var book = await _unitOfWork.BookRepository.FindAsync(command.Id);
 
-                if (author is null)
-                    return Result.Failure<Author>($"No Author found for Id {command.Id}");
+                if (book is null)
+                    return Result.Failure<Book>($"No Book found for Id {command.Id}");
 
-                _unitOfWork.AuthorRepository.Remove(author);
+                _unitOfWork.BookRepository.Remove(book);
 
                 await _unitOfWork.SaveChangesAsync();
 
-                return Result.Success(author);
+                return Result.Success(book);
             }
         }
     }

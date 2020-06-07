@@ -9,6 +9,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Profiles
         public BookProfile()
         {
             CreateMap<Book, BookDto>();
+            CreateMap<Book, BookForUpdateDto>();
         }
     }
 }

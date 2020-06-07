@@ -54,7 +54,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         /// </summary>
         /// <param name="authorId">Id of the author that you want</param>
         /// <returns>An ActionResult of type AuthorDto</returns>
-        [HttpGet("{authorId:min(1)}", Name = nameof(GetAuthor))]
+        [HttpGet("{authorId:long:min(1)}", Name = nameof(GetAuthor))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthorDto))]
         public async Task<IActionResult> GetAuthor(int authorId)
@@ -110,9 +110,9 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         /// <summary>
         /// Delete a author
         /// </summary>
-        /// <param name="authorId">The id of the blog to be deleted</param>
+        /// <param name="authorId">The id of the author to be deleted</param>
         /// <returns>Nothing</returns>
-        [HttpDelete("{authorId:min(1)}", Name = nameof(DeleteAuthor))]
+        [HttpDelete("{authorId:long:min(1)}", Name = nameof(DeleteAuthor))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteAuthor(int authorId)
