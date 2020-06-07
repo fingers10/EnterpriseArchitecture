@@ -1,5 +1,6 @@
 ﻿using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities;
-using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Author;
+using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors;
+using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Books;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Interfaces;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Utils;
 using Microsoft.AspNetCore.Http;

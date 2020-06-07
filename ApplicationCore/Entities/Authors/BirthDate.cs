@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Author
+namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors
 {
     public class BirthDate : ValueObject
     {

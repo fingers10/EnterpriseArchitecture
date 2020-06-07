@@ -49,7 +49,7 @@ namespace Fingers10.EnterpriseArchitecture.Infrastructure.Repositories
             return authors.ToList();
         }
 
-        public async Task<AuthorDto> GetAuthorAsync(int id)
+        public async Task<AuthorDto> GetAuthorAsync(long id)
         {
             const string sql = @"
             SELECT Id, CONCAT(FirstName, ' ', LastName) Name, 

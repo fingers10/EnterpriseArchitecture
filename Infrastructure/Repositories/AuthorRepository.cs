@@ -1,4 +1,4 @@
-﻿using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Author;
+﻿using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors;
 using Fingers10.EnterpriseArchitecture.Infrastructure.Data;
 
 namespace Fingers10.EnterpriseArchitecture.Infrastructure.Repositories

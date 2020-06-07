@@ -6,12 +6,12 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
 {
     public sealed class GetAuthorQuery : IQuery<AuthorDto>
     {
-        public GetAuthorQuery(int id)
+        public GetAuthorQuery(long id)
         {
             Id = id;
         }
 
-        public int Id { get; }
+        public long Id { get; }
 
         internal sealed class GetListQueryHandler : IQueryHandler<GetAuthorQuery, AuthorDto>
         {

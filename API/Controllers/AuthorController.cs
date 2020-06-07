@@ -4,7 +4,7 @@ using CSharpFunctionalExtensions;
 using Fingers10.EnterpriseArchitecture.API.Dtos;
 using Fingers10.EnterpriseArchitecture.API.ResourceParameters;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Dtos;
-using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Author;
+using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Services;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Utils;
 using Microsoft.AspNetCore.Http;

@@ -1,4 +1,4 @@
-﻿using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Author;
+﻿using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

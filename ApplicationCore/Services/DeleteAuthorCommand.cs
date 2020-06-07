@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Decorators;
-using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Author;
+using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Interfaces;
 using System;
 using System.Threading.Tasks;

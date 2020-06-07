@@ -7,6 +7,6 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Interfaces
     public interface IAuthorReadonlyRepository
     {
         Task<List<AuthorDto>> GetAllAsync(string mainCategory);
-        Task<AuthorDto> GetAuthorAsync(int id);
+        Task<AuthorDto> GetAuthorAsync(long id);
     }
 }

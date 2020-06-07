@@ -50,6 +50,41 @@
             <param name="authorId">The id of the blog to be deleted</param>
             <returns>Nothing</returns>
         </member>
+        <member name="T:Fingers10.EnterpriseArchitecture.API.Controllers.BookController">
+            <summary>
+            Controller to work on Book
+            </summary>
+        </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.#ctor(Fingers10.EnterpriseArchitecture.ApplicationCore.Utils.Messages,AutoMapper.IMapper)">
+            <summary>
+            Constructor for Book Controller
+            </summary>
+            <param name="messages">Message to Dispatch Command</param>
+            <param name="mapper">mapper to map objects</param>
+        </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.GetBooksForAuthor(System.Int64)">
+            <summary>
+            Get the list of books for author
+            </summary>
+            <param name="authorId">The Author Id for which books are needed</param>
+            <returns>An ActionResult of type IEnumerable of BookDto</returns>
+        </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.GetBookForAuthor(System.Int64,System.Int64)">
+            <summary>
+            Get the book by id
+            </summary>
+            <param name="authorId">Id of the author that you want</param>
+            <param name="bookId">Id of the book that you want</param>
+            <returns>An ActionResult of type BookDto</returns>
+        </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.CreateBookForAuthor(System.Int64,Fingers10.EnterpriseArchitecture.ApplicationCore.Dtos.CreateBookDto)">
+            <summary>
+            Create a book for author
+            </summary>
+            <param name="authorId">The author id to whom book needs to be created</param>
+            <param name="book">Book Dto</param>
+            <returns>An ActionResult of type BookDto</returns>
+        </member>
         <member name="T:Fingers10.EnterpriseArchitecture.API.Startup">
             <summary>
             Startup that gets called on application start to setup services and request middlewares

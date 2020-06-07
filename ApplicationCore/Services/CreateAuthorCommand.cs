@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Decorators;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Dtos;
-using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Author;
+using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -48,7 +48,7 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
                 if (birthDateResult.IsFailure)
                     return Result.Failure<Author>(birthDateResult.Error);
 
-                Result<MainCategory> mainCategoryResult = Entities.Author.MainCategory.Create(command.MainCategory);
+                Result<MainCategory> mainCategoryResult = Entities.Authors.MainCategory.Create(command.MainCategory);
                 if (mainCategoryResult.IsFailure)
                     return Result.Failure<Author>(mainCategoryResult.Error);
 

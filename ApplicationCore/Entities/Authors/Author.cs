@@ -1,8 +1,9 @@
-﻿using Fingers10.EnterpriseArchitecture.ApplicationCore.Interfaces;
+﻿using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Books;
+using Fingers10.EnterpriseArchitecture.ApplicationCore.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Author
+namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors
 {
     /// <summary>
     /// Author Domain Entity
