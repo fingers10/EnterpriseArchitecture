@@ -122,7 +122,8 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
             }
 
             var bookToReturn = _mapper.Map<BookDto>(result.Value);
-            return CreatedAtRoute(nameof(GetBookForAuthor), new { authorId, bookToReturn.Id }, bookToReturn);
+            return CreatedAtRoute(nameof(GetBookForAuthor), 
+                new { authorId, bookId = bookToReturn.Id }, bookToReturn);
         }
 
         /// <summary>
@@ -163,7 +164,8 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
                 }
 
                 var bookToReturn = _mapper.Map<BookDto>(addResult.Value);
-                return CreatedAtRoute(nameof(GetBookForAuthor), new { authorId, bookToReturn.Id }, bookToReturn);
+                return CreatedAtRoute(nameof(GetBookForAuthor), 
+                    new { authorId, bookId = bookToReturn.Id }, bookToReturn);
             }
 
             var updateCommand = new UpdateBookCommand(bookId, book.Title, book.Description, authorId);
@@ -234,7 +236,8 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
                 }
 
                 var bookToReturn = _mapper.Map<BookDto>(addResult.Value);
-                return CreatedAtRoute(nameof(GetBookForAuthor), new { authorId, bookToReturn.Id }, bookToReturn);
+                return CreatedAtRoute(nameof(GetBookForAuthor), 
+                    new { authorId, bookId = bookToReturn.Id }, bookToReturn);
             }
 
             var bookToPatch = _mapper.Map<BookForUpdateDto>(bookForAuthorFromRepo);

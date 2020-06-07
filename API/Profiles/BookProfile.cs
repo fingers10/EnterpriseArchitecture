@@ -8,8 +8,21 @@ namespace Fingers10.EnterpriseArchitecture.API.Profiles
     {
         public BookProfile()
         {
-            CreateMap<Book, BookDto>();
-            CreateMap<Book, BookForUpdateDto>();
+            CreateMap<Book, BookDto>()
+                .ForMember(
+                    dest => dest.Title,
+                    opt => opt.MapFrom(src => src.Title.Value))
+                .ForMember(
+                    dest => dest.Description,
+                    opt => opt.MapFrom(src => src.Description.Value));
+
+            CreateMap<Book, BookForUpdateDto>()
+                .ForMember(
+                    dest => dest.Title,
+                    opt => opt.MapFrom(src => src.Title.Value))
+                .ForMember(
+                    dest => dest.Description,
+                    opt => opt.MapFrom(src => src.Description.Value));
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Books
         {
             description = description?.Trim();
 
-            if (description.Length > 1500)
+            if (description?.Length > 1500)
                 return Result.Failure<Description>("Description is too long");
 
             return Result.Success(new Description(description));
