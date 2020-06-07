@@ -98,6 +98,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         /// <param name="book">Create Book Dto</param>
         /// <returns>An ActionResult of type BookDto</returns>
         [HttpPost(Name = nameof(CreateBookForAuthor))]
+        [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(BookDto))]
@@ -134,6 +135,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         /// <param name="book">Book For Update Dto</param>
         /// <returns>An ActionResult of type BookDto or Nothing</returns>
         [HttpPut("{bookId:long:min(1)}", Name = nameof(UpdateBookForAuthor))]
+        [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(BookDto))]
@@ -200,6 +202,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         /// </remarks>
         /// <returns>An ActionResult of type BookDto or Nothing</returns>
         [HttpPatch("{bookId:long:min(1)}", Name = nameof(PartiallyUpdateBookForAuthor))]
+        [Consumes("application/json-patch+json")]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(BookDto))]

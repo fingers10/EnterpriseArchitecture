@@ -76,6 +76,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         /// <param name="mapper">Mapper to map objects</param>
         /// <returns>An ActionResult of type AuthorDto</returns>
         [HttpPost(Name = nameof(CreateAuthor))]
+        [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(AuthorDto))]
         public async Task<ActionResult<AuthorDto>> CreateAuthor(CreateAuthorDto author, [FromServices] IMapper mapper)
