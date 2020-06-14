@@ -203,7 +203,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         /// <returns>An ActionResult of type BookDto or Nothing</returns>
         [HttpPatch("{bookId:long:min(1)}", Name = nameof(PartiallyUpdateBookForAuthor))]
         [Consumes("application/json-patch+json")]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ModelStateDictionary))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(BookDto))]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
