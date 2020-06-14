@@ -62,11 +62,12 @@
             <param name="messages">Message to Dispatch Command</param>
             <param name="mapper">mapper to map objects</param>
         </member>
-        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.GetBooksForAuthor(System.Int64)">
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.GetBooksForAuthor(System.Int64,Fingers10.EnterpriseArchitecture.API.ResourceParameters.BooksResourceParameters)">
             <summary>
             Get the list of books for author
             </summary>
             <param name="authorId">The Author Id for which books are needed</param>
+            <param name="booksResourceParameters">Books Resource Parameters</param>
             <returns>An ActionResult of type IEnumerable of BookDto</returns>
         </member>
         <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.GetBookForAuthor(System.Int64,System.Int64)">
@@ -122,6 +123,21 @@
             <param name="authorId">The author id of the book to be deleted</param>
             <param name="bookId">The id of the book to be deleted</param>
             <returns>Nothing</returns>
+        </member>
+        <member name="T:Fingers10.EnterpriseArchitecture.API.ResourceParameters.BooksResourceParameters">
+            <summary>
+            Books Resource Parameters
+            </summary>
+        </member>
+        <member name="P:Fingers10.EnterpriseArchitecture.API.ResourceParameters.BooksResourceParameters.PageNumber">
+            <summary>
+            Page Number
+            </summary>
+        </member>
+        <member name="P:Fingers10.EnterpriseArchitecture.API.ResourceParameters.BooksResourceParameters.PageSize">
+            <summary>
+            Page Size
+            </summary>
         </member>
         <member name="T:Fingers10.EnterpriseArchitecture.API.Startup">
             <summary>

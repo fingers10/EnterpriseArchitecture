@@ -2,6 +2,8 @@
 using AutoMapper;
 using CSharpFunctionalExtensions;
 using Fingers10.EnterpriseArchitecture.API.Dtos;
+using Fingers10.EnterpriseArchitecture.API.Helpers;
+using Fingers10.EnterpriseArchitecture.API.ResourceParameters;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Dtos;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Books;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Services;
@@ -15,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Fingers10.EnterpriseArchitecture.API.Controllers
@@ -45,12 +48,14 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         /// Get the list of books for author
         /// </summary>
         /// <param name="authorId">The Author Id for which books are needed</param>
+        /// <param name="booksResourceParameters">Books Resource Parameters</param>
         /// <returns>An ActionResult of type IEnumerable of BookDto</returns>
         [HttpGet(Name = nameof(GetBooksForAuthor))]
         [HttpHead(Name = "HeadBooks")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<BookDto>>> GetBooksForAuthor(long authorId)
+        public async Task<ActionResult<IEnumerable<BookDto>>> GetBooksForAuthor(long authorId,
+            [FromQuery] BooksResourceParameters booksResourceParameters)
         {
             var author = await _messages.Dispatch(new GetAuthorQuery(authorId));
 
@@ -59,7 +64,27 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
                 return NotFound($"No author with id {authorId} was found.");
             }
 
-            var books = await _messages.Dispatch(new GetBooksListQuery(authorId));
+            var books = await _messages.Dispatch(new GetBooksListQuery(authorId,
+                booksResourceParameters.PageNumber, booksResourceParameters.PageSize));
+
+            var previousPageLink = books.HasPrevious ?
+                CreateBooksResourceUri(booksResourceParameters, ResourceUriType.PreviousPage) : null;
+
+            var nextPageLink = books.HasNext ?
+                CreateBooksResourceUri(booksResourceParameters, ResourceUriType.NextPage) : null;
+
+            var paginationMetadata = new
+            {
+                totalCount = books.TotalCount,
+                pageSize = books.PageSize,
+                currentPage = books.CurrentPage,
+                totalPages = books.TotalPages,
+                previousPageLink,
+                nextPageLink
+            };
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
             return Ok(_mapper.Map<IEnumerable<BookDto>>(books));
         }
 
@@ -123,7 +148,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
             }
 
             var bookToReturn = _mapper.Map<BookDto>(result.Value);
-            return CreatedAtRoute(nameof(GetBookForAuthor), 
+            return CreatedAtRoute(nameof(GetBookForAuthor),
                 new { authorId, bookId = bookToReturn.Id }, bookToReturn);
         }
 
@@ -166,7 +191,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
                 }
 
                 var bookToReturn = _mapper.Map<BookDto>(addResult.Value);
-                return CreatedAtRoute(nameof(GetBookForAuthor), 
+                return CreatedAtRoute(nameof(GetBookForAuthor),
                     new { authorId, bookId = bookToReturn.Id }, bookToReturn);
             }
 
@@ -239,7 +264,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
                 }
 
                 var bookToReturn = _mapper.Map<BookDto>(addResult.Value);
-                return CreatedAtRoute(nameof(GetBookForAuthor), 
+                return CreatedAtRoute(nameof(GetBookForAuthor),
                     new { authorId, bookId = bookToReturn.Id }, bookToReturn);
             }
 
@@ -298,6 +323,32 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
             var options = HttpContext.RequestServices
                 .GetRequiredService<IOptions<ApiBehaviorOptions>>();
             return (ActionResult)options.Value.InvalidModelStateResponseFactory(ControllerContext);
+        }
+
+        private string CreateBooksResourceUri(BooksResourceParameters booksResourceParameters,
+            ResourceUriType resourceUriType)
+        {
+            return resourceUriType switch
+            {
+                ResourceUriType.PreviousPage => Url.Link(nameof(GetBooksForAuthor),
+                     new
+                     {
+                         pageNumber = booksResourceParameters.PageNumber - 1,
+                         pageSize = booksResourceParameters.PageSize
+                     }),
+                ResourceUriType.NextPage => Url.Link(nameof(GetBooksForAuthor),
+                     new
+                     {
+                         pageNumber = booksResourceParameters.PageNumber + 1,
+                         pageSize = booksResourceParameters.PageSize
+                     }),
+                _ => Url.Link(nameof(GetBooksForAuthor),
+                     new
+                     {
+                         pageNumber = booksResourceParameters.PageNumber,
+                         pageSize = booksResourceParameters.PageSize
+                     }),
+            };
         }
     }
 }
