@@ -65,7 +65,8 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
             }
 
             var books = await _messages.Dispatch(new GetBooksListQuery(authorId,
-                booksResourceParameters.PageNumber, booksResourceParameters.PageSize));
+                booksResourceParameters.SearchTitle, booksResourceParameters.PageNumber,
+                booksResourceParameters.PageSize));
 
             var previousPageLink = books.HasPrevious ?
                 CreateBooksResourceUri(booksResourceParameters, ResourceUriType.PreviousPage) : null;

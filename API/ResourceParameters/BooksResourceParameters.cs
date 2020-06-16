@@ -9,6 +9,11 @@
         private int _pageSize = 10;
 
         /// <summary>
+        /// Search Title
+        /// </summary>
+        public string SearchTitle { get; set; }
+
+        /// <summary>
         /// Page Number
         /// </summary>
         public int PageNumber { get; set; } = 1;

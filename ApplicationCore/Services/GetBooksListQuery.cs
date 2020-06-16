@@ -9,14 +9,16 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
 {
     public sealed class GetBooksListQuery : IQuery<PagedList<Book>>
     {
-        public GetBooksListQuery(long authorId, int pageNumber, int pageSize)
+        public GetBooksListQuery(long authorId, string searchTitle, int pageNumber, int pageSize)
         {
             AuthorId = authorId;
+            SearchTitle = searchTitle;
             PageNumber = pageNumber;
             PageSize = pageSize;
         }
 
         public long AuthorId { get; }
+        public string SearchTitle { get; }
         public int PageNumber { get; }
         public int PageSize { get; }
 
@@ -31,8 +33,9 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
 
             public async Task<PagedList<Book>> Handle(GetBooksListQuery query)
             {
-                var countSpec = new BooksByAuthorSpecification(query.AuthorId);
-                var listSpec = new BooksByAuthorSpecification(query.AuthorId, query.PageNumber, query.PageSize);
+                var countSpec = new BooksByAuthorSpecification(query.AuthorId, query.SearchTitle);
+                var listSpec = new BooksByAuthorSpecification(query.AuthorId, query.SearchTitle, 
+                    query.PageNumber, query.PageSize);
 
                 var count = await _unitOfWork.BookRepository.CountAsync(countSpec);
                 var items = await _unitOfWork.BookRepository.ListAsync(listSpec);

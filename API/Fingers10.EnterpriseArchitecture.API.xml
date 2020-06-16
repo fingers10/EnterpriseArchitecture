@@ -129,6 +129,11 @@
             Books Resource Parameters
             </summary>
         </member>
+        <member name="P:Fingers10.EnterpriseArchitecture.API.ResourceParameters.BooksResourceParameters.SearchTitle">
+            <summary>
+            Search Title
+            </summary>
+        </member>
         <member name="P:Fingers10.EnterpriseArchitecture.API.ResourceParameters.BooksResourceParameters.PageNumber">
             <summary>
             Page Number

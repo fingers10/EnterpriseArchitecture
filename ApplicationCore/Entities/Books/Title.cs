@@ -33,5 +33,10 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Books
         {
             yield return Value;
         }
+
+        public static implicit operator string(Title title)
+        {
+            return title.Value;
+        }
     }
 }
