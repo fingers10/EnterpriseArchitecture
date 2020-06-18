@@ -1,4 +1,5 @@
 using AutoMapper;
+using Fingers10.EnterpriseArchitecture.API.Services;
 using Fingers10.EnterpriseArchitecture.API.Utils;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Interfaces;
@@ -16,11 +17,11 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.Json.Serialization;
 
 namespace Fingers10.EnterpriseArchitecture.API
 {
@@ -59,13 +60,18 @@ namespace Fingers10.EnterpriseArchitecture.API
                 options.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
 
                 options.ReturnHttpNotAcceptable = true;
-                options.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
+                //options.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
             })
-                .AddJsonOptions(options =>
+                .AddNewtonsoftJson(setupAction =>
                 {
-                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                    setupAction.SerializerSettings.ContractResolver =
+                    new CamelCasePropertyNamesContractResolver();
                 })
+                //.AddJsonOptions(options =>
+                //{
+                //    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                //    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                //})
                 .AddXmlDataContractSerializerFormatters()
                 .ConfigureApiBehaviorOptions(options =>
                 {
@@ -240,6 +246,7 @@ namespace Fingers10.EnterpriseArchitecture.API
             services.AddSingleton(commandsConnectionString);
             services.AddSingleton(queriesConnectionString);
 
+            services.AddTransient<IPropertyCheckerService, PropertyCheckerService>();
             services.AddTransient<IBus, Bus>();
             services.AddTransient<MessageBus>();
             services.AddTransient<EventDispatcher>();

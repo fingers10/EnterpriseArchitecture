@@ -26,5 +26,10 @@
             get => _pageSize;
             set => _pageSize = (value > _maxPageSize) ? _maxPageSize : value;
         }
+
+        /// <summary>
+        /// Fields to return
+        /// </summary>
+        public string Fields { get; set; }
     }
 }

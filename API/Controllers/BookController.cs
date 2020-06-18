@@ -4,6 +4,7 @@ using CSharpFunctionalExtensions;
 using Fingers10.EnterpriseArchitecture.API.Dtos;
 using Fingers10.EnterpriseArchitecture.API.Helpers;
 using Fingers10.EnterpriseArchitecture.API.ResourceParameters;
+using Fingers10.EnterpriseArchitecture.API.Services;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Dtos;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Books;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Services;
@@ -32,16 +33,19 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
     {
         private readonly Messages _messages;
         private readonly IMapper _mapper;
+        private readonly IPropertyCheckerService _propertyCheckerService;
 
         /// <summary>
         /// Constructor for Book Controller
         /// </summary>
         /// <param name="messages">Message to Dispatch Command</param>
-        /// <param name="mapper">mapper to map objects</param>
-        public BookController(Messages messages, IMapper mapper)
+        /// <param name="mapper">Mapper to map objects</param>
+        /// <param name="propertyCheckerService">Service to verify properties</param>
+        public BookController(Messages messages, IMapper mapper, IPropertyCheckerService propertyCheckerService)
         {
             _messages = messages ?? throw new ArgumentNullException(nameof(messages));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _propertyCheckerService = propertyCheckerService ?? throw new ArgumentNullException(nameof(propertyCheckerService));
         }
 
         /// <summary>
@@ -54,9 +58,14 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         [HttpHead(Name = "HeadBooks")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<BookDto>>> GetBooksForAuthor(long authorId,
+        public async Task<IActionResult> GetBooksForAuthor(long authorId,
             [FromQuery] BooksResourceParameters booksResourceParameters)
         {
+            if (!_propertyCheckerService.TypeHasProperties<BookDto>(booksResourceParameters.Fields))
+            {
+                return BadRequest($"No field with the name {booksResourceParameters.Fields} was found.");
+            }
+
             var author = await _messages.Dispatch(new GetAuthorQuery(authorId));
 
             if (author is null)
@@ -86,7 +95,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
 
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 
-            return Ok(_mapper.Map<IEnumerable<BookDto>>(books));
+            return Ok(_mapper.Map<IEnumerable<BookDto>>(books).ShapeData(booksResourceParameters.Fields));
         }
 
         /// <summary>
@@ -94,12 +103,18 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         /// </summary>
         /// <param name="authorId">Id of the author that you want</param>
         /// <param name="bookId">Id of the book that you want</param>
+        /// <param name="fields">Fields to return</param>
         /// <returns>An ActionResult of type BookDto</returns>
         [HttpGet("{bookId:long:min(1)}", Name = nameof(GetBookForAuthor))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<BookDto>> GetBookForAuthor(long authorId, long bookId)
+        public async Task<ActionResult<BookDto>> GetBookForAuthor(long authorId, long bookId, string fields)
         {
+            if (!_propertyCheckerService.TypeHasProperties<BookDto>(fields))
+            {
+                return BadRequest($"No field with the name {fields} was found.");
+            }
+
             var author = await _messages.Dispatch(new GetAuthorQuery(authorId));
 
             if (author is null)
@@ -114,7 +129,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
                 return NotFound($"No book with id {bookId} was found for author with id {authorId}.");
             }
 
-            return Ok(_mapper.Map<BookDto>(bookForAuthorFromRepo));
+            return Ok(_mapper.Map<BookDto>(bookForAuthorFromRepo).ShapeData(fields));
         }
 
         /// <summary>
@@ -334,18 +349,21 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
                 ResourceUriType.PreviousPage => Url.Link(nameof(GetBooksForAuthor),
                      new
                      {
+                         fields = booksResourceParameters.Fields,
                          pageNumber = booksResourceParameters.PageNumber - 1,
                          pageSize = booksResourceParameters.PageSize
                      }),
                 ResourceUriType.NextPage => Url.Link(nameof(GetBooksForAuthor),
                      new
                      {
+                         fields = booksResourceParameters.Fields,
                          pageNumber = booksResourceParameters.PageNumber + 1,
                          pageSize = booksResourceParameters.PageSize
                      }),
                 _ => Url.Link(nameof(GetBooksForAuthor),
                      new
                      {
+                         fields = booksResourceParameters.Fields,
                          pageNumber = booksResourceParameters.PageNumber,
                          pageSize = booksResourceParameters.PageSize
                      }),

@@ -55,12 +55,13 @@
             Controller to work on Book
             </summary>
         </member>
-        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.#ctor(Fingers10.EnterpriseArchitecture.ApplicationCore.Utils.Messages,AutoMapper.IMapper)">
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.#ctor(Fingers10.EnterpriseArchitecture.ApplicationCore.Utils.Messages,AutoMapper.IMapper,Fingers10.EnterpriseArchitecture.API.Services.IPropertyCheckerService)">
             <summary>
             Constructor for Book Controller
             </summary>
             <param name="messages">Message to Dispatch Command</param>
-            <param name="mapper">mapper to map objects</param>
+            <param name="mapper">Mapper to map objects</param>
+            <param name="propertyCheckerService">Service to verify properties</param>
         </member>
         <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.GetBooksForAuthor(System.Int64,Fingers10.EnterpriseArchitecture.API.ResourceParameters.BooksResourceParameters)">
             <summary>
@@ -70,12 +71,13 @@
             <param name="booksResourceParameters">Books Resource Parameters</param>
             <returns>An ActionResult of type IEnumerable of BookDto</returns>
         </member>
-        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.GetBookForAuthor(System.Int64,System.Int64)">
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.GetBookForAuthor(System.Int64,System.Int64,System.String)">
             <summary>
             Get the book by id
             </summary>
             <param name="authorId">Id of the author that you want</param>
             <param name="bookId">Id of the book that you want</param>
+            <param name="fields">Fields to return</param>
             <returns>An ActionResult of type BookDto</returns>
         </member>
         <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.CreateBookForAuthor(System.Int64,Fingers10.EnterpriseArchitecture.ApplicationCore.Dtos.CreateBookDto)">
@@ -142,6 +144,11 @@
         <member name="P:Fingers10.EnterpriseArchitecture.API.ResourceParameters.BooksResourceParameters.PageSize">
             <summary>
             Page Size
+            </summary>
+        </member>
+        <member name="P:Fingers10.EnterpriseArchitecture.API.ResourceParameters.BooksResourceParameters.Fields">
+            <summary>
+            Fields to return
             </summary>
         </member>
         <member name="T:Fingers10.EnterpriseArchitecture.API.Startup">
