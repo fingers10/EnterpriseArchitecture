@@ -3,6 +3,7 @@ using AutoMapper;
 using CSharpFunctionalExtensions;
 using Fingers10.EnterpriseArchitecture.API.Dtos;
 using Fingers10.EnterpriseArchitecture.API.Helpers;
+using Fingers10.EnterpriseArchitecture.API.Models;
 using Fingers10.EnterpriseArchitecture.API.ResourceParameters;
 using Fingers10.EnterpriseArchitecture.API.Services;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Dtos;
@@ -18,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -77,25 +79,36 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
                 booksResourceParameters.SearchTitle, booksResourceParameters.PageNumber,
                 booksResourceParameters.PageSize));
 
-            var previousPageLink = books.HasPrevious ?
-                CreateBooksResourceUri(booksResourceParameters, ResourceUriType.PreviousPage) : null;
-
-            var nextPageLink = books.HasNext ?
-                CreateBooksResourceUri(booksResourceParameters, ResourceUriType.NextPage) : null;
-
             var paginationMetadata = new
             {
                 totalCount = books.TotalCount,
                 pageSize = books.PageSize,
                 currentPage = books.CurrentPage,
-                totalPages = books.TotalPages,
-                previousPageLink,
-                nextPageLink
+                totalPages = books.TotalPages
             };
 
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 
-            return Ok(_mapper.Map<IEnumerable<BookDto>>(books).ShapeData(booksResourceParameters.Fields));
+            var links = CreateLinksForBooks(booksResourceParameters, books.HasNext, books.HasPrevious);
+
+            var shapedBooks = _mapper.Map<IEnumerable<BookDto>>(books)
+                                .ShapeData(booksResourceParameters.Fields);
+
+            var shapedBooksWithLinks = shapedBooks.Select(book =>
+            {
+                var bookAsDictionary = book as IDictionary<string, object>;
+                var bookLinks = CreateLinksForBook((long)bookAsDictionary["AuthorId"], (long)bookAsDictionary["Id"], null);
+                bookAsDictionary.Add("links", bookLinks);
+                return bookAsDictionary;
+            });
+
+            var linkedCollectionResource = new
+            {
+                value = shapedBooksWithLinks,
+                links
+            };
+
+            return Ok(linkedCollectionResource);
         }
 
         /// <summary>
@@ -129,7 +142,14 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
                 return NotFound($"No book with id {bookId} was found for author with id {authorId}.");
             }
 
-            return Ok(_mapper.Map<BookDto>(bookForAuthorFromRepo).ShapeData(fields));
+            var links = CreateLinksForBook(authorId, bookId, fields);
+
+            var linkedResourceToReturn = _mapper.Map<BookDto>(bookForAuthorFromRepo).ShapeData(fields)
+                                         as IDictionary<string, object>;
+
+            linkedResourceToReturn.Add("links", links);
+
+            return Ok(linkedResourceToReturn);
         }
 
         /// <summary>
@@ -164,8 +184,17 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
             }
 
             var bookToReturn = _mapper.Map<BookDto>(result.Value);
+
+            var links = CreateLinksForBook(authorId, bookToReturn.Id, null);
+
+            var linkedResourceToReturn = _mapper.Map<BookDto>(bookToReturn).ShapeData(null)
+                                         as IDictionary<string, object>;
+
+            linkedResourceToReturn.Add("links", links);
+
             return CreatedAtRoute(nameof(GetBookForAuthor),
-                new { authorId, bookId = bookToReturn.Id }, bookToReturn);
+                new { authorId = linkedResourceToReturn["AuthorId"], bookId = linkedResourceToReturn["Id"] }
+                , linkedResourceToReturn);
         }
 
         /// <summary>
@@ -360,14 +389,83 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
                          pageNumber = booksResourceParameters.PageNumber + 1,
                          pageSize = booksResourceParameters.PageSize
                      }),
-                _ => Url.Link(nameof(GetBooksForAuthor),
+                ResourceUriType.Current => Url.Link(nameof(GetBooksForAuthor),
                      new
                      {
                          fields = booksResourceParameters.Fields,
                          pageNumber = booksResourceParameters.PageNumber,
                          pageSize = booksResourceParameters.PageSize
                      }),
+                _ => throw new NotImplementedException(),
             };
+        }
+
+        private IEnumerable<LinkDto> CreateLinksForBook(long authorId, long bookId, string fields)
+        {
+            var links = new List<LinkDto>();
+
+            if (string.IsNullOrWhiteSpace(fields))
+            {
+                links.Add(
+                  new LinkDto(Url.Link(nameof(GetBookForAuthor), new { authorId, bookId }),
+                  "self",
+                  "GET"));
+            }
+            else
+            {
+                links.Add(
+                  new LinkDto(Url.Link(nameof(GetBookForAuthor), new { authorId, bookId, fields }),
+                  "self",
+                  "GET"));
+            }
+
+            links.Add(
+               new LinkDto(Url.Link(nameof(DeleteBookForAuthor), new { authorId, bookId }),
+               "delete_book_for_author",
+               "DELETE"));
+
+            links.Add(
+                new LinkDto(Url.Link(nameof(CreateBookForAuthor), new { authorId }),
+                "create_book_for_author",
+                "POST"));
+
+            links.Add(
+               new LinkDto(Url.Link(nameof(GetBooksForAuthor), new { authorId }),
+               "books",
+               "GET"));
+
+            return links;
+        }
+
+        private IEnumerable<LinkDto> CreateLinksForBooks(
+            BooksResourceParameters booksResourceParameters,
+            bool hasNext, bool hasPrevious)
+        {
+            var links = new List<LinkDto>
+            {
+                // self 
+                new LinkDto(CreateBooksResourceUri(
+                   booksResourceParameters, ResourceUriType.Current)
+               , "self", "GET")
+            };
+
+            if (hasNext)
+            {
+                links.Add(
+                  new LinkDto(CreateBooksResourceUri(
+                      booksResourceParameters, ResourceUriType.NextPage),
+                  "nextPage", "GET"));
+            }
+
+            if (hasPrevious)
+            {
+                links.Add(
+                    new LinkDto(CreateBooksResourceUri(
+                        booksResourceParameters, ResourceUriType.PreviousPage),
+                    "previousPage", "GET"));
+            }
+
+            return links;
         }
     }
 }
