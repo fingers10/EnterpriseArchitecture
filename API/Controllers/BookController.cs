@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -117,12 +118,20 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         /// <param name="authorId">Id of the author that you want</param>
         /// <param name="bookId">Id of the book that you want</param>
         /// <param name="fields">Fields to return</param>
+        /// <param name="mediaType">Accept media type</param>
         /// <returns>An ActionResult of type BookDto</returns>
         [HttpGet("{bookId:long:min(1)}", Name = nameof(GetBookForAuthor))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<BookDto>> GetBookForAuthor(long authorId, long bookId, string fields)
+        [Produces("application/vnd.fingers10.hateoas+json")]
+        public async Task<ActionResult<BookDto>> GetBookForAuthor(long authorId, long bookId, string fields,
+            [FromHeader(Name = "Accept")] string mediaType)
         {
+            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue parsedMediaType))
+            {
+                return BadRequest();
+            }
+
             if (!_propertyCheckerService.TypeHasProperties<BookDto>(fields))
             {
                 return BadRequest($"No field with the name {fields} was found.");
@@ -142,14 +151,19 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
                 return NotFound($"No book with id {bookId} was found for author with id {authorId}.");
             }
 
-            var links = CreateLinksForBook(authorId, bookId, fields);
+            if (parsedMediaType.MediaType == "application/vnd.fingers10.hateoas+json") 
+            {
+                var links = CreateLinksForBook(authorId, bookId, fields);
 
-            var linkedResourceToReturn = _mapper.Map<BookDto>(bookForAuthorFromRepo).ShapeData(fields)
-                                         as IDictionary<string, object>;
+                var linkedResourceToReturn = _mapper.Map<BookDto>(bookForAuthorFromRepo).ShapeData(fields)
+                                             as IDictionary<string, object>;
 
-            linkedResourceToReturn.Add("links", links);
+                linkedResourceToReturn.Add("links", links);
 
-            return Ok(linkedResourceToReturn);
+                return Ok(linkedResourceToReturn);
+            }
+
+            return Ok(_mapper.Map<BookDto>(bookForAuthorFromRepo).ShapeData(fields));
         }
 
         /// <summary>
@@ -380,21 +394,24 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
                      {
                          fields = booksResourceParameters.Fields,
                          pageNumber = booksResourceParameters.PageNumber - 1,
-                         pageSize = booksResourceParameters.PageSize
+                         pageSize = booksResourceParameters.PageSize,
+                         searchTitle = booksResourceParameters.SearchTitle
                      }),
                 ResourceUriType.NextPage => Url.Link(nameof(GetBooksForAuthor),
                      new
                      {
                          fields = booksResourceParameters.Fields,
                          pageNumber = booksResourceParameters.PageNumber + 1,
-                         pageSize = booksResourceParameters.PageSize
+                         pageSize = booksResourceParameters.PageSize,
+                         searchTitle = booksResourceParameters.SearchTitle
                      }),
                 ResourceUriType.Current => Url.Link(nameof(GetBooksForAuthor),
                      new
                      {
                          fields = booksResourceParameters.Fields,
                          pageNumber = booksResourceParameters.PageNumber,
-                         pageSize = booksResourceParameters.PageSize
+                         pageSize = booksResourceParameters.PageSize,
+                         searchTitle = booksResourceParameters.SearchTitle
                      }),
                 _ => throw new NotImplementedException(),
             };

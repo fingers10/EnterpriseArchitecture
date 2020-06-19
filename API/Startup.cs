@@ -127,6 +127,17 @@ namespace Fingers10.EnterpriseArchitecture.API
                     };
                 });
 
+            services.Configure<MvcOptions>(config =>
+            {
+                var newtonsoftJsonOutputFormatter = config.OutputFormatters
+                      .OfType<NewtonsoftJsonOutputFormatter>()?.FirstOrDefault();
+
+                if (newtonsoftJsonOutputFormatter != null)
+                {
+                    newtonsoftJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.fingers10.hateoas+json");
+                }
+            });
+
             services.AddVersionedApiExplorer(options =>
             {
                 options.GroupNameFormat = "'v'VV";

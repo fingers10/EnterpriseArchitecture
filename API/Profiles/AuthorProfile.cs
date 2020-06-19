@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using Fingers10.EnterpriseArchitecture.API.Dtos;
 using Fingers10.EnterpriseArchitecture.API.Helpers;
-using Fingers10.EnterpriseArchitecture.ApplicationCore.Dtos;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors;
 
 namespace Fingers10.EnterpriseArchitecture.API.Profiles
