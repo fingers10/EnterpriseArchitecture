@@ -19,6 +19,17 @@ namespace Fingers10.EnterpriseArchitecture.API.Profiles
                 .ForMember(
                     dest => dest.MainCategory,
                     opt => opt.MapFrom(src => src.MainCategory.Value));
+
+            CreateMap<Author, AuthorFullDto>()
+                .ForMember(
+                    dest => dest.FirstName,
+                    opt => opt.MapFrom(src => src.Name.First))
+                .ForMember(
+                    dest => dest.LastName,
+                    opt => opt.MapFrom(src => src.Name.Last))
+                .ForMember(
+                    dest => dest.MainCategory,
+                    opt => opt.MapFrom(src => src.MainCategory.Value));
         }
     }
 }

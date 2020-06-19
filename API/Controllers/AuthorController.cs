@@ -108,7 +108,11 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         [HttpGet("{authorId:long:min(1)}", Name = nameof(GetAuthor))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthorDto))]
-        [Produces("application/vnd.fingers10.hateoas+json")]
+        [Produces("application/vnd.fingers10.hateoas+json",
+                  "application/vnd.fingers10.author.full+json",
+                  "application/vnd.fingers10.author.full.hateoas+json",
+                  "application/vnd.fingers10.author.friendly+json",
+                  "application/vnd.fingers10.author.friendly.hateoas+json")]
         public async Task<IActionResult> GetAuthor(int authorId, string fields,
             [FromHeader(Name = "Accept")] string mediaType)
         {
@@ -129,20 +133,45 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
                 return NotFound();
             }
 
-            if (parsedMediaType.MediaType == "application/vnd.fingers10.hateoas+json")
+            var includeLinks = parsedMediaType.SubTypeWithoutSuffix
+               .EndsWith("hateoas", StringComparison.InvariantCultureIgnoreCase);
+
+            IEnumerable<LinkDto> links = new List<LinkDto>();
+
+            if (includeLinks)
             {
-
-                var links = CreateLinksForAuthor(authorId, fields);
-
-                var linkedResourceToReturn = _mapper.Map<AuthorDto>(authorFromRepo).ShapeData(fields)
-                                             as IDictionary<string, object>;
-
-                linkedResourceToReturn.Add("links", links);
-
-                return Ok(linkedResourceToReturn);
+                links = CreateLinksForAuthor(authorId, fields);
             }
 
-            return Ok(_mapper.Map<AuthorDto>(authorFromRepo).ShapeData(fields));
+            var primaryMediaType = includeLinks ?
+                parsedMediaType.SubTypeWithoutSuffix
+                .Substring(0, parsedMediaType.SubTypeWithoutSuffix.Length - 8)
+                : parsedMediaType.SubTypeWithoutSuffix;
+
+            // full author
+            if (primaryMediaType == "vnd.fingers10.author.full")
+            {
+                var fullResourceToReturn = _mapper.Map<AuthorFullDto>(authorFromRepo)
+                    .ShapeData(fields) as IDictionary<string, object>;
+
+                if (includeLinks)
+                {
+                    fullResourceToReturn.Add("links", links);
+                }
+
+                return Ok(fullResourceToReturn);
+            }
+
+            // friendly author
+            var friendlyResourceToReturn = _mapper.Map<AuthorDto>(authorFromRepo)
+                                            .ShapeData(fields) as IDictionary<string, object>;
+
+            if (includeLinks)
+            {
+                friendlyResourceToReturn.Add("links", links);
+            }
+
+            return Ok(friendlyResourceToReturn);
         }
 
         /// <summary>
