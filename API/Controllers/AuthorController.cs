@@ -1,6 +1,7 @@
 ﻿using Ardalis.GuardClauses;
 using AutoMapper;
 using CSharpFunctionalExtensions;
+using Fingers10.EnterpriseArchitecture.API.ActionConstraints;
 using Fingers10.EnterpriseArchitecture.API.Dtos;
 using Fingers10.EnterpriseArchitecture.API.Helpers;
 using Fingers10.EnterpriseArchitecture.API.Models;
@@ -56,6 +57,12 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors(
             [FromQuery] AuthorsResourceParameters authorsResourceParameters)
         {
+            if (!string.IsNullOrWhiteSpace(authorsResourceParameters.Fields) &&
+                !authorsResourceParameters.Fields.Split(",").Contains("id"))
+            {
+                return BadRequest($"Id fields is required in {authorsResourceParameters.Fields}.");
+            }
+
             if (!_propertyCheckerService.TypeHasProperties<AuthorDto>(authorsResourceParameters.Fields))
             {
                 return BadRequest($"No field with the name {authorsResourceParameters.Fields} was found.");
@@ -116,6 +123,11 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         public async Task<IActionResult> GetAuthor(int authorId, string fields,
             [FromHeader(Name = "Accept")] string mediaType)
         {
+            if (!string.IsNullOrWhiteSpace(fields) && !fields.Split(",").Contains("id"))
+            {
+                return BadRequest($"Id fields is required in {fields}.");
+            }
+
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue parsedMediaType))
             {
                 return BadRequest();
@@ -174,13 +186,47 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
             return Ok(friendlyResourceToReturn);
         }
 
+        //[HttpPost(Name = nameof(CreateAuthorWithDateOfDeath))]
+        //[RequestHeaderMatchesMediaType("Content-Type",
+        //    "application/vnd.fingers10.authorforcreationwithdateofdeath+json")]
+        //[Consumes("application/vnd.fingers10.authorforcreationwithdateofdeath+json")]
+        //public async Task<IActionResult> CreateAuthorWithDateOfDeath(AuthorForCreationWithDateOfDeathDto author)
+        //{
+        //    Guard.Against.Null(author, nameof(author));
+
+        //    var command = new CreateAuthorWithDeathDateCommand(author.FirstName, author.LastName,
+        //        author.DateOfBirth, author.DateOfDeath, author.MainCategory);
+
+        //    Result<Author> result = await _messages.Dispatch(command);
+
+        //    if (result.IsFailure)
+        //    {
+        //        return BadRequest(result.Error);
+        //    }
+
+        //    var authorToReturn = _mapper.Map<AuthorDto>(result.Value);
+
+        //    var links = CreateLinksForAuthor(authorToReturn.Id, null);
+
+        //    var linkedResourceToReturn = authorToReturn.ShapeData(null)
+        //        as IDictionary<string, object>;
+        //    linkedResourceToReturn.Add("links", links);
+
+        //    return CreatedAtRoute(nameof(GetAuthor),
+        //        new { authorId = linkedResourceToReturn["Id"] },
+        //        linkedResourceToReturn);
+        //}
+
         /// <summary>
         /// Create a author
         /// </summary>
         /// <param name="author">The author to create</param>
         /// <returns>An ActionResult of type AuthorDto</returns>
         [HttpPost(Name = nameof(CreateAuthor))]
-        [Consumes("application/json")]
+        [RequestHeaderMatchesMediaType("Content-Type",
+            "application/json",
+            "application/vnd.fingers10.authorforcreation+json")]
+        [Consumes("application/json", "application/vnd.fingers10.authorforcreation+json")]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(AuthorDto))]
         public async Task<ActionResult<AuthorDto>> CreateAuthor(CreateAuthorDto author)

@@ -13,6 +13,7 @@ CREATE TABLE [dbo].[Author](
 	[FirstName] [varchar](50) NOT NULL,
 	[LastName] [varchar](50) NOT NULL,
 	[DateOfBirth] [datetimeoffset](7) NOT NULL,
+	[DateOfDeath] [datetimeoffset](7) NULL,
 	[MainCategory] [nvarchar](50) NOT NULL,
  CONSTRAINT [PK_Author] PRIMARY KEY CLUSTERED 
 (

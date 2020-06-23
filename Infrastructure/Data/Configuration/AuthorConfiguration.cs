@@ -20,6 +20,9 @@ namespace Fingers10.EnterpriseArchitecture.Infrastructure.Data.Configuration
                    .IsRequired()
                    .HasConversion(p => p.Value, p => BirthDate.Create(p).Value);
 
+            builder.Property(p => p.DateOfDeath)
+                   .HasConversion(p => p.Value, p => DeathDate.Create(p).Value);
+
             builder.Property(p => p.MainCategory)
                    .IsRequired()
                    .HasMaxLength(50)

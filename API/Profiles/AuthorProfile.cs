@@ -15,7 +15,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Profiles
                     opt => opt.MapFrom(src => $"{src.Name.First} {src.Name.Last}"))
                 .ForMember(
                     dest => dest.Age,
-                    opt => opt.MapFrom(src => src.DateOfBirth.Value.GetCurrentAge()))
+                    opt => opt.MapFrom(src => src.DateOfBirth.Value.GetCurrentAge(src.DateOfDeath.Value)))
                 .ForMember(
                     dest => dest.MainCategory,
                     opt => opt.MapFrom(src => src.MainCategory.Value));
@@ -30,6 +30,8 @@ namespace Fingers10.EnterpriseArchitecture.API.Profiles
                 .ForMember(
                     dest => dest.MainCategory,
                     opt => opt.MapFrom(src => src.MainCategory.Value));
+
+            CreateMap<AuthorForCreationWithDateOfDeathDto, Author>();
         }
     }
 }

@@ -17,16 +17,19 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors
         {
         }
 
-        public Author(Name name, BirthDate dateOfBirth, MainCategory mainCategory) : this()
+        public Author(Name name, BirthDate dateOfBirth, DeathDate dateOfDeath, MainCategory mainCategory) : this()
         {
             Name = name;
             DateOfBirth = dateOfBirth;
+            DateOfDeath = dateOfDeath;
             MainCategory = mainCategory;
         }
 
         public virtual Name Name { get; private set; }
 
         public BirthDate DateOfBirth { get; private set; }
+
+        public DeathDate DateOfDeath { get; private set; }
 
         public MainCategory MainCategory { get; private set; }
 
