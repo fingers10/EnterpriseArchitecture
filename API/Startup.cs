@@ -50,6 +50,16 @@ namespace Fingers10.EnterpriseArchitecture.API
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpCacheHeaders((expirationModelOptions) =>
+            {
+                expirationModelOptions.MaxAge = 60;
+                expirationModelOptions.CacheLocation = Marvin.Cache.Headers.CacheLocation.Private;
+            },
+            (validationModelOptions) =>
+            {
+                validationModelOptions.MustRevalidate = true;
+            });
+
             services.AddResponseCaching();
 
             services.AddResponseCompression();
@@ -290,7 +300,9 @@ namespace Fingers10.EnterpriseArchitecture.API
 
             app.UseHttpsRedirection();
 
-            app.UseResponseCaching();
+            //app.UseResponseCaching();
+
+            app.UseHttpCacheHeaders();
 
             app.UseResponseCompression();
 

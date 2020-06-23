@@ -10,6 +10,7 @@ using Fingers10.EnterpriseArchitecture.ApplicationCore.Dtos;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Books;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Services;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Utils;
+using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +32,9 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
     /// </summary>
     [Produces("application/json", "application/xml")]
     [Route("api/authors/{authorId:long:min(1)}/books")]
-    [ResponseCache(CacheProfileName = "240SecondsCacheProfile")]
+    //[ResponseCache(CacheProfileName = "240SecondsCacheProfile")]
+    [HttpCacheExpiration(CacheLocation = CacheLocation.Public)]
+    [HttpCacheValidation(MustRevalidate = true)]
     [ApiController]
     public class BookController : ControllerBase
     {
@@ -122,7 +125,9 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         /// <param name="mediaType">Accept media type</param>
         /// <returns>An ActionResult of type BookDto</returns>
         [HttpGet("{bookId:long:min(1)}", Name = nameof(GetBookForAuthor))]
-        [ResponseCache(Duration = 120)]
+        //[ResponseCache(Duration = 120)]
+        [HttpCacheExpiration(CacheLocation = CacheLocation.Public, MaxAge = 1000)]
+        [HttpCacheValidation(MustRevalidate = false)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Produces("application/vnd.fingers10.hateoas+json")]
