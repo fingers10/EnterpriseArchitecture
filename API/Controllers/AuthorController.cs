@@ -60,7 +60,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
             if (!string.IsNullOrWhiteSpace(authorsResourceParameters.Fields) &&
                 !authorsResourceParameters.Fields.Split(",").Contains("id"))
             {
-                return BadRequest($"Id fields is required in {authorsResourceParameters.Fields}.");
+                return BadRequest($"Id field is required in {authorsResourceParameters.Fields}.");
             }
 
             if (!_propertyCheckerService.TypeHasProperties<AuthorDto>(authorsResourceParameters.Fields))
@@ -115,7 +115,8 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         [HttpGet("{authorId:long:min(1)}", Name = nameof(GetAuthor))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthorDto))]
-        [Produces("application/vnd.fingers10.hateoas+json",
+        [Produces("application/json",
+                  "application/vnd.fingers10.hateoas+json",
                   "application/vnd.fingers10.author.full+json",
                   "application/vnd.fingers10.author.full.hateoas+json",
                   "application/vnd.fingers10.author.friendly+json",
@@ -125,7 +126,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         {
             if (!string.IsNullOrWhiteSpace(fields) && !fields.Split(",").Contains("id"))
             {
-                return BadRequest($"Id fields is required in {fields}.");
+                return BadRequest($"Id field is required in {fields}.");
             }
 
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue parsedMediaType))

@@ -31,6 +31,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
     /// </summary>
     [Produces("application/json", "application/xml")]
     [Route("api/authors/{authorId:long:min(1)}/books")]
+    [ResponseCache(CacheProfileName = "240SecondsCacheProfile")]
     [ApiController]
     public class BookController : ControllerBase
     {
@@ -121,6 +122,7 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         /// <param name="mediaType">Accept media type</param>
         /// <returns>An ActionResult of type BookDto</returns>
         [HttpGet("{bookId:long:min(1)}", Name = nameof(GetBookForAuthor))]
+        [ResponseCache(Duration = 120)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Produces("application/vnd.fingers10.hateoas+json")]

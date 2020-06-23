@@ -50,6 +50,10 @@ namespace Fingers10.EnterpriseArchitecture.API
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddResponseCaching();
+
+            services.AddResponseCompression();
+
             services.AddControllers(options =>
             {
                 //options.Filters.Add(new AuthorizeFilter());
@@ -60,6 +64,11 @@ namespace Fingers10.EnterpriseArchitecture.API
                 options.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
 
                 options.ReturnHttpNotAcceptable = true;
+                options.CacheProfiles.Add("240SecondsCacheProfile",
+                                                 new CacheProfile()
+                                                 {
+                                                     Duration = 240
+                                                 });
                 //options.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
             })
                 .AddNewtonsoftJson(setupAction =>
@@ -280,6 +289,10 @@ namespace Fingers10.EnterpriseArchitecture.API
             app.UseMiddleware<ExceptionHandler>();
 
             app.UseHttpsRedirection();
+
+            app.UseResponseCaching();
+
+            app.UseResponseCompression();
 
             app.UseSwagger();
 
