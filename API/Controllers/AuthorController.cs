@@ -187,36 +187,37 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
             return Ok(friendlyResourceToReturn);
         }
 
-        //[HttpPost(Name = nameof(CreateAuthorWithDateOfDeath))]
-        //[RequestHeaderMatchesMediaType("Content-Type",
-        //    "application/vnd.fingers10.authorforcreationwithdateofdeath+json")]
-        //[Consumes("application/vnd.fingers10.authorforcreationwithdateofdeath+json")]
-        //public async Task<IActionResult> CreateAuthorWithDateOfDeath(AuthorForCreationWithDateOfDeathDto author)
-        //{
-        //    Guard.Against.Null(author, nameof(author));
+        [HttpPost(Name = nameof(CreateAuthorWithDateOfDeath))]
+        [RequestHeaderMatchesMediaType("Content-Type",
+            "application/vnd.fingers10.authorforcreationwithdateofdeath+json")]
+        [Consumes("application/vnd.fingers10.authorforcreationwithdateofdeath+json")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public async Task<IActionResult> CreateAuthorWithDateOfDeath(AuthorForCreationWithDateOfDeathDto author)
+        {
+            Guard.Against.Null(author, nameof(author));
 
-        //    var command = new CreateAuthorWithDeathDateCommand(author.FirstName, author.LastName,
-        //        author.DateOfBirth, author.DateOfDeath, author.MainCategory);
+            var command = new CreateAuthorWithDeathDateCommand(author.FirstName, author.LastName,
+                author.DateOfBirth, author.DateOfDeath, author.MainCategory);
 
-        //    Result<Author> result = await _messages.Dispatch(command);
+            Result<Author> result = await _messages.Dispatch(command);
 
-        //    if (result.IsFailure)
-        //    {
-        //        return BadRequest(result.Error);
-        //    }
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
 
-        //    var authorToReturn = _mapper.Map<AuthorDto>(result.Value);
+            var authorToReturn = _mapper.Map<AuthorDto>(result.Value);
 
-        //    var links = CreateLinksForAuthor(authorToReturn.Id, null);
+            var links = CreateLinksForAuthor(authorToReturn.Id, null);
 
-        //    var linkedResourceToReturn = authorToReturn.ShapeData(null)
-        //        as IDictionary<string, object>;
-        //    linkedResourceToReturn.Add("links", links);
+            var linkedResourceToReturn = authorToReturn.ShapeData(null)
+                as IDictionary<string, object>;
+            linkedResourceToReturn.Add("links", links);
 
-        //    return CreatedAtRoute(nameof(GetAuthor),
-        //        new { authorId = linkedResourceToReturn["Id"] },
-        //        linkedResourceToReturn);
-        //}
+            return CreatedAtRoute(nameof(GetAuthor),
+                new { authorId = linkedResourceToReturn["Id"] },
+                linkedResourceToReturn);
+        }
 
         /// <summary>
         /// Create a author

@@ -1,4 +1,5 @@
 using AutoMapper;
+using Fingers10.EnterpriseArchitecture.API.OperationFilters;
 using Fingers10.EnterpriseArchitecture.API.Services;
 using Fingers10.EnterpriseArchitecture.API.Utils;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities;
@@ -256,6 +257,8 @@ namespace Fingers10.EnterpriseArchitecture.API
                     return actionApiVersionModel.ImplementedApiVersions.Any(v =>
                         $"EnterpriseArchitectureOpenAPISpecificationv{v}" == documentName);
                 });
+
+                options.OperationFilter<CreateAuthorOperationFilter>();
 
                 var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
