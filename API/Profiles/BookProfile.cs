@@ -16,6 +16,17 @@ namespace Fingers10.EnterpriseArchitecture.API.Profiles
                     dest => dest.Description,
                     opt => opt.MapFrom(src => src.Description.Value));
 
+            CreateMap<Book, BookWithConcatenatedAuthorNameDto>()
+                .ForMember(
+                    dest => dest.Title,
+                    opt => opt.MapFrom(src => src.Title.Value))
+                .ForMember(
+                    dest => dest.Description,
+                    opt => opt.MapFrom(src => src.Description.Value))
+                .ForMember(
+                    dest => dest.Author,
+                    opt => opt.MapFrom(src => $"{src.Author.Name.First} {src.Author.Name.Last}"));
+
             CreateMap<Book, BookForUpdateDto>()
                 .ForMember(
                     dest => dest.Title,

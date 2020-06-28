@@ -258,6 +258,7 @@ namespace Fingers10.EnterpriseArchitecture.API
                         $"EnterpriseArchitectureOpenAPISpecificationv{v}" == documentName);
                 });
 
+                options.OperationFilter<GetBookOperationFilter>();
                 options.OperationFilter<CreateAuthorOperationFilter>();
 
                 var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";

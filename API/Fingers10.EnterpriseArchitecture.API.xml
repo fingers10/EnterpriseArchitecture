@@ -84,6 +84,16 @@
             <param name="mediaType">Accept media type</param>
             <returns>An ActionResult of type BookDto</returns>
         </member>
+        <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.GetBookForAuthorWithConcatenatedName(System.Int64,System.Int64,System.String,System.String)">
+            <summary>
+            Get the book by id with concatenated author name
+            </summary>
+            <param name="authorId">Id of the author that you want</param>
+            <param name="bookId">Id of the book that you want</param>
+            <param name="fields">Fields to return</param>
+            <param name="mediaType">Accept media type</param>
+            <returns>An ActionResult of type BookDto</returns>
+        </member>
         <member name="M:Fingers10.EnterpriseArchitecture.API.Controllers.BookController.CreateBookForAuthor(System.Int64,Fingers10.EnterpriseArchitecture.ApplicationCore.Dtos.CreateBookDto)">
             <summary>
             Create a book for author

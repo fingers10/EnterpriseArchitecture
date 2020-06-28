@@ -1,6 +1,7 @@
 ﻿using Ardalis.GuardClauses;
 using AutoMapper;
 using CSharpFunctionalExtensions;
+using Fingers10.EnterpriseArchitecture.API.ActionConstraints;
 using Fingers10.EnterpriseArchitecture.API.Dtos;
 using Fingers10.EnterpriseArchitecture.API.Helpers;
 using Fingers10.EnterpriseArchitecture.API.Models;
@@ -131,6 +132,9 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Produces("application/vnd.fingers10.hateoas+json")]
+        [RequestHeaderMatchesMediaType("Accept",
+            "application/json",
+            "application/vnd.fingers10.hateoas+json")]
         public async Task<ActionResult<BookDto>> GetBookForAuthor(long authorId, long bookId, string fields,
             [FromHeader(Name = "Accept")] string mediaType)
         {
@@ -171,6 +175,66 @@ namespace Fingers10.EnterpriseArchitecture.API.Controllers
             }
 
             return Ok(_mapper.Map<BookDto>(bookForAuthorFromRepo).ShapeData(fields));
+        }
+
+        /// <summary>
+        /// Get the book by id with concatenated author name
+        /// </summary>
+        /// <param name="authorId">Id of the author that you want</param>
+        /// <param name="bookId">Id of the book that you want</param>
+        /// <param name="fields">Fields to return</param>
+        /// <param name="mediaType">Accept media type</param>
+        /// <returns>An ActionResult of type BookDto</returns>
+        [HttpGet("{bookId:long:min(1)}", Name = nameof(GetBookForAuthorWithConcatenatedName))]
+        [HttpCacheExpiration(CacheLocation = CacheLocation.Public, MaxAge = 1000)]
+        [HttpCacheValidation(MustRevalidate = false)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [Produces("application/vnd.fingers10.bookwithconcatenatedauthorname.hateoas+json")]
+        [RequestHeaderMatchesMediaType("Accept",
+            "application/vnd.fingers10.bookwithconcatenatedauthorname.hateoas+json")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public async Task<ActionResult<BookWithConcatenatedAuthorNameDto>> 
+            GetBookForAuthorWithConcatenatedName(long authorId, long bookId, 
+            string fields, [FromHeader(Name = "Accept")] string mediaType)
+        {
+            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue parsedMediaType))
+            {
+                return BadRequest();
+            }
+
+            if (!_propertyCheckerService.TypeHasProperties<BookWithConcatenatedAuthorNameDto>(fields))
+            {
+                return BadRequest($"No field with the name {fields} was found.");
+            }
+
+            var author = await _messages.Dispatch(new GetAuthorQuery(authorId));
+
+            if (author is null)
+            {
+                return NotFound($"No author with id {authorId} was found.");
+            }
+
+            var bookForAuthorFromRepo = await _messages.Dispatch(new GetBookQuery(authorId, bookId));
+
+            if (bookForAuthorFromRepo == null)
+            {
+                return NotFound($"No book with id {bookId} was found for author with id {authorId}.");
+            }
+
+            if (parsedMediaType.MediaType == "application/vnd.fingers10.bookwithconcatenatedauthorname.hateoas+json")
+            {
+                var links = CreateLinksForBook(authorId, bookId, fields);
+
+                var linkedResourceToReturn = _mapper.Map<BookWithConcatenatedAuthorNameDto>(bookForAuthorFromRepo).ShapeData(fields)
+                                             as IDictionary<string, object>;
+
+                linkedResourceToReturn.Add("links", links);
+
+                return Ok(linkedResourceToReturn);
+            }
+
+            return Ok(_mapper.Map<BookWithConcatenatedAuthorNameDto>(bookForAuthorFromRepo).ShapeData(fields));
         }
 
         /// <summary>
