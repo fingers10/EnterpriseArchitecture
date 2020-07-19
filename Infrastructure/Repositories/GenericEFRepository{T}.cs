@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace Fingers10.EnterpriseArchitecture.Infrastructure.Repositories
 {
-    public abstract class GenericEFRepository<T> : IAsyncRepository<T> where T : Entity, IAggregateRoot
+    public abstract class GenericEFRepository<T, TDbContext> : IAsyncRepository<T> where T : Entity, IAggregateRoot where TDbContext : DbContext
     {
-        protected Fingers10Context _context;
+        protected TDbContext _context;
 
-        protected GenericEFRepository(Fingers10Context context)
+        protected GenericEFRepository(TDbContext context)
         {
             _context = context;
         }
