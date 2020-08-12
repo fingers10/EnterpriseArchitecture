@@ -13,7 +13,7 @@ namespace UnitTest.ValueObjects
         {
             //Arrange
             var fixture = new Fixture();
-            var birthDate = fixture.Create<DateTime>().AddDays(fixture.Create<int>());
+            var birthDate = fixture.Create<DateTimeOffset>().AddDays(fixture.Create<int>());
 
             //Act
             var result = BirthDate.Create(birthDate);

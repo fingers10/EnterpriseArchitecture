@@ -20,7 +20,7 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Books
         {
             return Result.SuccessIf(true, description)
                          .Map(() => description?.Trim())
-                         .Ensure(description => description?.Length <= 1500, "Description is too long")
+                         .Ensure(description => description is null || description.Length <= 1500, "Description is too long.")
                          .Map(description => new Description(description));
         }
 

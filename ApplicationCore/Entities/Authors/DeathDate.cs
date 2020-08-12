@@ -19,7 +19,8 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors
 
         public static Result<DeathDate> Create(DateTimeOffset? deathDate)
         {
-            return Result.SuccessIf(deathDate.HasValue && deathDate.Value.Date < DateTimeOffset.Now.Date, "Death Date should not be future date")
+            return Result.SuccessIf(deathDate.HasValue, "Death Date should not be null.")
+                         .Ensure(() => deathDate.Value.Date < DateTimeOffset.Now.Date, "Death Date should not be future date.")
                          .Map(() => new DeathDate(deathDate));
         }
 

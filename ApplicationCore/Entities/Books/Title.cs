@@ -18,9 +18,9 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Books
 
         public static Result<Title> Create(string title)
         {
-            return Result.SuccessIf(!string.IsNullOrWhiteSpace(title), "Title should not be empty")
+            return Result.SuccessIf(!string.IsNullOrWhiteSpace(title), "Title should not be empty.")
                          .Map(() => title.Trim())
-                         .Ensure(title => title.Length <= 100, "Title is too long")
+                         .Ensure(title => title.Length <= 100, "Title is too long.")
                          .Map(title => new Title(title));
         }
 
