@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities
 {
-    public class Email : ValueObject
+    public sealed class Email : ValueObject
     {
         public string Value { get; }
 
@@ -15,18 +15,12 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities
 
         public static Result<Email> Create(string email)
         {
-            if (string.IsNullOrWhiteSpace(email))
-                return Result.Failure<Email>("Email should not be empty");
-
-            email = email.Trim();
-
-            if (email.Length > 200)
-                return Result.Failure<Email>("Email is too long");
-
-            if (!Regex.IsMatch(email, @"^(.+)@(.+)$"))
-                return Result.Failure<Email>("Email is invalid");
-
-            return Result.Success(new Email(email));
+            return Result.SuccessIf(!string.IsNullOrWhiteSpace(email), "Email should not be empty")
+                         .Map(() => email.Trim())
+                         .Ensure(email => !string.IsNullOrEmpty(email), "Email should not be empty")
+                         .Ensure(email => email.Length <= 200, "Email is too long")
+                         .Ensure(email => Regex.IsMatch(email, "^(.+)@(.+)$"), "Email is invalid")
+                         .Map(email => new Email(email));
         }
 
         protected override IEnumerable<object> GetEqualityComponents()

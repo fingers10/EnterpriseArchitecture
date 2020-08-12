@@ -40,26 +40,23 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
 
             public async Task<Result<Author>> Handle(CreateAuthorCommand command)
             {
-                Result<Name> nameResult = Name.Create(command.FirstName, command.LastName);
-                if (nameResult.IsFailure)
-                    return Result.Failure<Author>(nameResult.Error);
+                var nameResult = Name.Create(command.FirstName, command.LastName);
+                var birthDateResult = BirthDate.Create(command.DateOfBirth);
+                var mainCategoryResult = Entities.Authors.MainCategory.Create(command.MainCategory);
 
-                Result<BirthDate> birthDateResult = BirthDate.Create(command.DateOfBirth);
-                if (birthDateResult.IsFailure)
-                    return Result.Failure<Author>(birthDateResult.Error);
+                var authorResult = Result.Combine(nameResult, birthDateResult, mainCategoryResult)
+                                   .Map(() => new Author(nameResult.Value, birthDateResult.Value, null, mainCategoryResult.Value));
+                
+                if (authorResult.IsFailure)
+                    return Result.Failure<Author>(authorResult.Error);
 
-                Result<MainCategory> mainCategoryResult = Entities.Authors.MainCategory.Create(command.MainCategory);
-                if (mainCategoryResult.IsFailure)
-                    return Result.Failure<Author>(mainCategoryResult.Error);
-
-                var author = new Author(nameResult.Value, birthDateResult.Value, null, mainCategoryResult.Value);
                 //author.AddBooks(command.Books);
 
-                await _unitOfWork.AuthorRepository.AddAsync(author);
+                await _unitOfWork.AuthorRepository.AddAsync(authorResult.Value);
 
                 await _unitOfWork.SaveChangesAsync();
 
-                return Result.Success(author);
+                return Result.Success(authorResult.Value);
             }
         }
     }
