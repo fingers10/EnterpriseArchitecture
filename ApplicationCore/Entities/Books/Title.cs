@@ -18,15 +18,10 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Books
 
         public static Result<Title> Create(string title)
         {
-            if (string.IsNullOrWhiteSpace(title))
-                return Result.Failure<Title>("Title should not be empty");
-
-            title = title.Trim();
-
-            if (title.Length > 100)
-                return Result.Failure<Title>("Title is too long");
-
-            return Result.Success(new Title(title));
+            return Result.SuccessIf(!string.IsNullOrWhiteSpace(title), "Title should not be empty")
+                         .Map(() => title.Trim())
+                         .Ensure(title => title.Length <= 100, "Title is too long")
+                         .Map(title => new Title(title));
         }
 
         protected override IEnumerable<object> GetEqualityComponents()

@@ -17,12 +17,10 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors
 
         public DateTimeOffset Value { get; }
 
-        public static Result<BirthDate> Create(DateTimeOffset dateTime)
+        public static Result<BirthDate> Create(DateTimeOffset birthDate)
         {
-            if (dateTime.Date > DateTimeOffset.Now.Date)
-                return Result.Failure<BirthDate>("Birth Date should not be future date");
-
-            return Result.Success(new BirthDate(dateTime));
+            return Result.SuccessIf(birthDate.Date < DateTimeOffset.Now.Date, "Birth Date should not be future date.")
+                         .Map(() => new BirthDate(birthDate));
         }
 
         protected override IEnumerable<object> GetEqualityComponents()

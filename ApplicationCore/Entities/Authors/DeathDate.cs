@@ -17,12 +17,10 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors
 
         public DateTimeOffset? Value { get; }
 
-        public static Result<DeathDate> Create(DateTimeOffset? dateTime)
+        public static Result<DeathDate> Create(DateTimeOffset? deathDate)
         {
-            if (dateTime.HasValue && dateTime.Value.Date > DateTimeOffset.Now.Date)
-                return Result.Failure<DeathDate>("Death Date should not be future date");
-
-            return Result.Success(new DeathDate(dateTime));
+            return Result.SuccessIf(deathDate.HasValue && deathDate.Value.Date < DateTimeOffset.Now.Date, "Death Date should not be future date")
+                         .Map(() => new DeathDate(deathDate));
         }
 
         protected override IEnumerable<object> GetEqualityComponents()

@@ -18,12 +18,10 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Books
 
         public static Result<Description> Create(string description)
         {
-            description = description?.Trim();
-
-            if (description?.Length > 1500)
-                return Result.Failure<Description>("Description is too long");
-
-            return Result.Success(new Description(description));
+            return Result.SuccessIf(true, description)
+                         .Map(() => description?.Trim())
+                         .Ensure(description => description?.Length <= 1500, "Description is too long")
+                         .Map(description => new Description(description));
         }
 
         protected override IEnumerable<object> GetEqualityComponents()

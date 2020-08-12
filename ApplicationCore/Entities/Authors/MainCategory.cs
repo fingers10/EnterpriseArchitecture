@@ -18,15 +18,10 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors
 
         public static Result<MainCategory> Create(string mainCategory)
         {
-            if (string.IsNullOrWhiteSpace(mainCategory))
-                return Result.Failure<MainCategory>("Main Category is required.");
-
-            mainCategory = mainCategory.Trim();
-
-            if (mainCategory.Length > 50)
-                return Result.Failure<MainCategory>("Main Category is too long.");
-
-            return Result.Success(new MainCategory(mainCategory));
+            return Result.SuccessIf(!string.IsNullOrWhiteSpace(mainCategory), "Main Category is required.")
+                         .Map(() => mainCategory.Trim())
+                         .Ensure(mainCategory => mainCategory.Length <= 50, "Main Category is too long.")
+                         .Map(mainCategory => new MainCategory(mainCategory));
         }
 
         protected override IEnumerable<object> GetEqualityComponents()

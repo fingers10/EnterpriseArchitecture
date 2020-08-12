@@ -7,10 +7,8 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Books
     {
         public static Result<Description> Create(string description)
         {
-            if (string.IsNullOrWhiteSpace(description))
-                return Result.Failure<Description>("Description is required");
-
-            return Description.Create(description);
+            return Result.SuccessIf(!string.IsNullOrWhiteSpace(description), "Description is required")
+                         .Map(() => Description.Create(description)).Value;
         }
 
         protected override IEnumerable<object> GetEqualityComponents()
