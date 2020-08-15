@@ -5,8 +5,10 @@ using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
+[assembly: InternalsVisibleTo("UnitTest")]
 namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
 {
     public sealed class CreateAuthorCommand : ICommand<Author>
