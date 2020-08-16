@@ -27,6 +27,7 @@ namespace UnitTest.ValueObjects
         {
             //Arrange
             var fixture = new Fixture();
+            fixture.Customizations.Add(new CurrentDateTimeGenerator());
             var deathDate = fixture.Create<DateTimeOffset>().AddDays(fixture.Create<int>());
 
             //Act
@@ -42,6 +43,7 @@ namespace UnitTest.ValueObjects
         {
             //Arrange
             var fixture = new Fixture();
+            fixture.Customizations.Add(new CurrentDateTimeGenerator());
             var deathDate = fixture.Create<DateTimeOffset>().AddDays(-fixture.Create<int>());
 
             //Act

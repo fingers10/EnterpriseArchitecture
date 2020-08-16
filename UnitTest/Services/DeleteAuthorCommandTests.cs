@@ -39,6 +39,7 @@ namespace UnitTest.Services
             //Arrange
             var fixture = new Fixture();
             var command = fixture.Create<DeleteAuthorCommand>();
+            fixture.Customizations.Add(new CurrentDateTimeGenerator());
             fixture.Register(() => Name.Create(fixture.Create<string>(), fixture.Create<string>()).Value);
             fixture.Register(() => BirthDate.Create(fixture.Create<DateTimeOffset>().AddDays(-fixture.Create<int>())).Value);
             fixture.Register(() => DeathDate.Create(fixture.Create<DateTimeOffset>().AddDays(-fixture.Create<int>())).Value);

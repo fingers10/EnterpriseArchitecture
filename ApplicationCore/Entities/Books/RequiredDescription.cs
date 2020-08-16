@@ -5,7 +5,7 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Books
 {
     public class RequiredDescription : Description
     {
-        public static Result<Description> Create(string description)
+        public static new Result<Description> Create(string description)
         {
             return Result.SuccessIf(!string.IsNullOrWhiteSpace(description), "Description is required.")
                          .Finally(result => result.IsSuccess ?
