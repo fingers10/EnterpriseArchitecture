@@ -3,8 +3,10 @@ using Fingers10.EnterpriseArchitecture.ApplicationCore.Decorators;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Interfaces;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
+[assembly: InternalsVisibleTo("UnitTest")]
 namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
 {
     public sealed class DeleteAuthorCommand : ICommand<Author>
@@ -29,14 +31,14 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
 
             public async Task<Result<Author>> Handle(DeleteAuthorCommand command)
             {
-                var author = await _unitOfWork.AuthorRepository.FindAsync(command.Id);
+                var author = await _unitOfWork.AuthorRepository.FindAsync(command.Id).ConfigureAwait(false);
 
                 if (author is null)
-                    return Result.Failure<Author>($"No Author found for Id {command.Id}");
+                    return Result.Failure<Author>($"No Author found for Id {command.Id}.");
 
                 _unitOfWork.AuthorRepository.Remove(author);
 
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
                 return Result.Success(author);
             }

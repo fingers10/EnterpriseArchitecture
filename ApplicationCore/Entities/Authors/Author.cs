@@ -25,13 +25,13 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors
             MainCategory = mainCategory;
         }
 
-        public virtual Name Name { get; private set; }
+        public virtual Name Name { get; }
 
-        public BirthDate DateOfBirth { get; private set; }
+        public BirthDate DateOfBirth { get; }
 
-        public DeathDate DateOfDeath { get; private set; }
+        public DeathDate DateOfDeath { get; }
 
-        public MainCategory MainCategory { get; private set; }
+        public MainCategory MainCategory { get; }
 
         public void AddBooks(List<Book> books)
         {

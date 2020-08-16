@@ -48,15 +48,15 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
 
                 var authorResult = Result.Combine(nameResult, birthDateResult, mainCategoryResult)
                                    .Map(() => new Author(nameResult.Value, birthDateResult.Value, null, mainCategoryResult.Value));
-                
+
                 if (authorResult.IsFailure)
                     return Result.Failure<Author>(authorResult.Error);
 
                 //author.AddBooks(command.Books);
 
-                await _unitOfWork.AuthorRepository.AddAsync(authorResult.Value);
+                await _unitOfWork.AuthorRepository.AddAsync(authorResult.Value).ConfigureAwait(false);
 
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
                 return Result.Success(authorResult.Value);
             }

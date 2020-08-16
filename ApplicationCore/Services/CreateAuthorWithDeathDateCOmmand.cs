@@ -3,8 +3,10 @@ using Fingers10.EnterpriseArchitecture.ApplicationCore.Decorators;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Entities.Authors;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Interfaces;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
+[assembly: InternalsVisibleTo("UnitTest")]
 namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
 {
     public sealed class CreateAuthorWithDeathDateCommand : ICommand<Author>
@@ -38,29 +40,23 @@ namespace Fingers10.EnterpriseArchitecture.ApplicationCore.Services
 
             public async Task<Result<Author>> Handle(CreateAuthorWithDeathDateCommand command)
             {
-                Result<Name> nameResult = Name.Create(command.FirstName, command.LastName);
-                if (nameResult.IsFailure)
-                    return Result.Failure<Author>(nameResult.Error);
+                var nameResult = Name.Create(command.FirstName, command.LastName);
+                var birthDateResult = BirthDate.Create(command.DateOfBirth);
+                var deathDateResult = DeathDate.Create(command.DateOfDeath);
+                var mainCategoryResult = Entities.Authors.MainCategory.Create(command.MainCategory);
 
-                Result<BirthDate> birthDateResult = BirthDate.Create(command.DateOfBirth);
-                if (birthDateResult.IsFailure)
-                    return Result.Failure<Author>(birthDateResult.Error);
+                var authorResult = Result.Combine(nameResult, birthDateResult, deathDateResult, mainCategoryResult)
+                                         .Ensure(() => birthDateResult.Value.Value.Date < deathDateResult.Value.Value.Value.Date, "Death date should not be less than birth date.")
+                                         .Map(() => new Author(nameResult.Value, birthDateResult.Value, deathDateResult.Value, mainCategoryResult.Value));
 
-                Result<DeathDate> deathDateResult = DeathDate.Create(command.DateOfDeath);
-                if (deathDateResult.IsFailure)
-                    return Result.Failure<Author>(deathDateResult.Error);
+                if (authorResult.IsFailure)
+                    return Result.Failure<Author>(authorResult.Error);
 
-                Result<MainCategory> mainCategoryResult = Entities.Authors.MainCategory.Create(command.MainCategory);
-                if (mainCategoryResult.IsFailure)
-                    return Result.Failure<Author>(mainCategoryResult.Error);
+                await _unitOfWork.AuthorRepository.AddAsync(authorResult.Value).ConfigureAwait(false);
 
-                var author = new Author(nameResult.Value, birthDateResult.Value, deathDateResult.Value, mainCategoryResult.Value);
+                await _unitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
-                await _unitOfWork.AuthorRepository.AddAsync(author);
-
-                await _unitOfWork.SaveChangesAsync();
-
-                return Result.Success(author);
+                return Result.Success(authorResult.Value);
             }
         }
     }
