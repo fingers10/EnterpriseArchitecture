@@ -4,8 +4,8 @@ using Fingers10.EnterpriseArchitecture.ApplicationCore.Interfaces;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Services;
 using FluentAssertions;
 using Moq;
-using System;
 using System.Threading.Tasks;
+using UnitTest.Customizations;
 using Xunit;
 using static Fingers10.EnterpriseArchitecture.ApplicationCore.Services.DeleteAuthorCommand;
 
@@ -39,11 +39,7 @@ namespace UnitTest.Services
             //Arrange
             var fixture = new Fixture();
             var command = fixture.Create<DeleteAuthorCommand>();
-            fixture.Customizations.Add(new CurrentDateTimeGenerator());
-            fixture.Register(() => Name.Create(fixture.Create<string>(), fixture.Create<string>()).Value);
-            fixture.Register(() => BirthDate.Create(fixture.Create<DateTimeOffset>().AddDays(-fixture.Create<int>())).Value);
-            fixture.Register(() => DeathDate.Create(fixture.Create<DateTimeOffset>().AddDays(-fixture.Create<int>())).Value);
-            fixture.Register(() => MainCategory.Create(fixture.Create<string>()).Value);
+            fixture.Customize(new AuthorCustomization());
             var author = fixture.Create<Author>();
             var mockUnitOfWork = new Mock<IUnitOfWork>();
             var mockAuthorRepository = new Mock<IAsyncRepository<Author>>();
