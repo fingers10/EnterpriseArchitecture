@@ -1,16 +1,21 @@
 ﻿using Fingers10.EnterpriseArchitecture.API.IntegrationTest.Fakes;
 using Fingers10.EnterpriseArchitecture.API.IntegrationTest.Helpers;
 using Fingers10.EnterpriseArchitecture.ApplicationCore.Interfaces;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.IO;
 
 namespace Fingers10.EnterpriseArchitecture.API.IntegrationTest
 {
+    // https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-3.1
     public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where
         TStartup : class
     {
@@ -23,6 +28,20 @@ namespace Fingers10.EnterpriseArchitecture.API.IntegrationTest
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
+            var projectDir = Directory.GetCurrentDirectory();
+            var configPath = Path.Combine(projectDir, "appsettings.json");
+
+            builder.ConfigureAppConfiguration((context, conifguration) =>
+            {
+                conifguration.AddJsonFile(configPath);
+            });
+
+            builder.ConfigureTestServices(services =>
+            {
+                services.AddAuthentication("Test")
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
+            });
+
             builder.ConfigureServices(services =>
             {
                 //var descriptor = services.SingleOrDefault(
